@@ -12,9 +12,9 @@ class LoginViewController: UIViewController {
     let accountLabel = UILabel()
     let passwordLabel = UILabel()
     let rememberMeLabel = UILabel()
-    let loginButton = UIButton(type: .system)
+    let loginButton = UIButton(type: .roundedRect)
     let rememberCheckBox = UIButton(type: .custom, primaryAction: UIAction(handler: { _ in }))
-    let signUpButton = UIButton(type: .infoDark)
+    let signUpButton = UIButton(type: .custom)
     let accountInputTextField = UITextField()
     let passwordInputTextField = UITextField()
     let stackView = UIStackView()
@@ -58,19 +58,19 @@ class LoginViewController: UIViewController {
     }
     
     private func configAccountLabel() {
-        accountLabel.font = .systemFont(ofSize: 16)
+        accountLabel.font = .systemFont(ofSize: 24)
         accountLabel.textAlignment = .left
         accountLabel.text = "帳號"
     }
     
     private func configPasswordLabel() {
-        passwordLabel.font = .systemFont(ofSize: 16)
+        passwordLabel.font = .systemFont(ofSize: 24)
         passwordLabel.textAlignment = .left
         passwordLabel.text = "密碼"
     }
     
     private func configRememberMeLabel() {
-        rememberMeLabel.font = .systemFont(ofSize: 16)
+        rememberMeLabel.font = .systemFont(ofSize: 24)
     }
     
     private func configBottomLine() -> CALayer {
@@ -91,18 +91,23 @@ class LoginViewController: UIViewController {
     
     private func configSignUpButton() {
         signUpButton.setTitle("註冊帳號", for: .normal)
+        signUpButton.setTitleColor(.systemBlue, for: .normal)
+        signUpButton.titleLabel?.font = .systemFont(ofSize: 24)
     }
     
     private func configLoginButton() {
         loginButton.setTitle("登入", for: .normal)
+        loginButton.backgroundColor = .black
+        loginButton.titleLabel?.font = .systemFont(ofSize: 24)
+        loginButton.tintColor = .white
+        loginButton.layer.cornerRadius = 15
     }
     
     private func configRememberCheckBox() {
-        rememberCheckBox.setImage(UIImage(systemName: "rectangle"), for: .normal)
-        rememberCheckBox.setImage(UIImage(systemName: "checkmark.rectangle"), for: .selected)
+        rememberCheckBox.setImage(UIImage(systemName: "square"), for: .normal)
+        rememberCheckBox.setImage(UIImage(systemName: "checkmark.square"), for: .selected)
         rememberCheckBox.tintColor = .black
         rememberCheckBox.addTarget(self, action: #selector(didTapCheckBox), for: .touchUpInside)
-        
     }
     
     private func configAutoLayout() {
@@ -118,39 +123,40 @@ class LoginViewController: UIViewController {
         
         NSLayoutConstraint.activate([
             
-            accountLabel.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
-            accountLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 80),
+            accountLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 60),
+            accountLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 200),
             accountLabel.heightAnchor.constraint(equalToConstant: 24),
             
             accountInputTextField.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
-            accountInputTextField.topAnchor.constraint(equalTo: accountLabel.bottomAnchor, constant: 30),
-            accountInputTextField.widthAnchor.constraint(equalToConstant: 220),
+            accountInputTextField.topAnchor.constraint(equalTo: accountLabel.bottomAnchor, constant: 10),
+            accountInputTextField.widthAnchor.constraint(equalToConstant: 280),
             accountInputTextField.heightAnchor.constraint(equalToConstant: 40),
             
-            passwordLabel.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+            passwordLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 60),
             passwordLabel.topAnchor.constraint(equalTo: accountInputTextField.topAnchor, constant: 80),
             passwordLabel.heightAnchor.constraint(equalToConstant: 24),
             
             passwordInputTextField.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
-            passwordInputTextField.topAnchor.constraint(equalTo: passwordLabel.bottomAnchor, constant: 30),
-            passwordInputTextField.widthAnchor.constraint(equalToConstant: 220),
+            passwordInputTextField.topAnchor.constraint(equalTo: passwordLabel.bottomAnchor, constant: 10),
+            passwordInputTextField.widthAnchor.constraint(equalToConstant: 280),
             passwordInputTextField.heightAnchor.constraint(equalToConstant: 40),
             
             stackView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
             stackView.topAnchor.constraint(equalTo: passwordInputTextField.bottomAnchor, constant: 30),
-            stackView.widthAnchor.constraint(equalToConstant: 220),
+            stackView.widthAnchor.constraint(equalToConstant: 300),
             stackView.heightAnchor.constraint(equalToConstant: 60),
             
-            rememberCheckBox.widthAnchor.constraint(equalToConstant: 26),
-            rememberCheckBox.heightAnchor.constraint(equalToConstant: 26),
+            rememberCheckBox.widthAnchor.constraint(equalToConstant: 32),
+            rememberCheckBox.heightAnchor.constraint(equalToConstant: 32),
             
             loginButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
             loginButton.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 30),
             loginButton.heightAnchor.constraint(equalToConstant: 44),
+            loginButton.widthAnchor.constraint(equalToConstant: 300),
             
-            signUpButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+            signUpButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 60),
             signUpButton.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 30),
-            signUpButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -120),
+            signUpButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -220),
             signUpButton.heightAnchor.constraint(equalToConstant: 44)
         ])
     }
