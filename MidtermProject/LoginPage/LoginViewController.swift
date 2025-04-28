@@ -93,6 +93,7 @@ class LoginViewController: UIViewController {
         signUpButton.setTitle("註冊帳號", for: .normal)
         signUpButton.setTitleColor(.systemBlue, for: .normal)
         signUpButton.titleLabel?.font = .systemFont(ofSize: 24)
+        signUpButton.addTarget(self, action: #selector(didTapSignUpPage), for: .touchUpInside)
     }
     
     private func configLoginButton() {
@@ -124,7 +125,7 @@ class LoginViewController: UIViewController {
         NSLayoutConstraint.activate([
             
             accountLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 60),
-            accountLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 200),
+            accountLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 180),
             accountLabel.heightAnchor.constraint(equalToConstant: 24),
             
             accountInputTextField.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
@@ -156,7 +157,7 @@ class LoginViewController: UIViewController {
             
             signUpButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 60),
             signUpButton.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 30),
-            signUpButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -220),
+            signUpButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -160),
             signUpButton.heightAnchor.constraint(equalToConstant: 44)
         ])
     }
@@ -165,7 +166,11 @@ class LoginViewController: UIViewController {
         rememberCheckBox.isSelected.toggle()
         rememberCheckBox.configuration?.baseBackgroundColor = .white
         rememberCheckBox.configuration?.baseForegroundColor = .black
-       
+    }
+    
+    @objc private func didTapSignUpPage() {
+        let signupVC = SignupViewController()
+        self.navigationController?.pushViewController(signupVC, animated: true)
     }
 }
 
