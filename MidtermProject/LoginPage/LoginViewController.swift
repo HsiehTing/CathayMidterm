@@ -177,8 +177,9 @@ class LoginViewController: UIViewController {
 extension UITextField {
     
     func setUnderLine() {
+        self.layer.sublayers?.removeAll(where: { $0.name == "underline" })
         let border = CALayer()
-        let width = CGFloat(0.5)
+        let width = CGFloat(1.5)
         border.borderColor = UIColor.black.cgColor
         border.frame =  CGRect(x: 0, y: self.frame.size.height - width, width:  self.frame.size.width - 10, height: self.frame.size.height)
         border.borderWidth = width
