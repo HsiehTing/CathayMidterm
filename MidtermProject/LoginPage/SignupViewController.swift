@@ -11,12 +11,13 @@
 
 import UIKit
 
-class SignupViewController: UIViewController {
+class SignupViewController: UIViewController, SignupDelegate {
     
     private let questionCollectionView = UICollectionView(
         frame: .zero, collectionViewLayout: SignupViewController.configFlowLayout()
     )
     private let signupButton = UIButton()
+    private var passBackArray: [String: String] = [:]
     let questionSets = ["帳號", "密碼", "再次確認密碼", "姓名"]
     private let questionCollectionViewIdentifier = "QuestionCollectionView"
     
@@ -27,13 +28,28 @@ class SignupViewController: UIViewController {
         configSignupButton()
         configAutoLayout()
         configToolBarButton()
-        self.navigationItem.hidesBackButton = true
+        self.setUpTapGesture()
     }
     
+    func passInfo(info: String, index: Int) {
+        self.passBackArray[String(index)] = info
+        
+        if passBackArray.count == questionSets.count , passBackArray["1"] == passBackArray["2"] {
+            signupButton.isUserInteractionEnabled = true
+            signupButton.backgroundColor = .black
+        }
+    }
+    
+    func setUpTapGesture() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        self.view.addGestureRecognizer(tapGesture)
+    }
     
     private func setNavigationTitile() {
         navigationItem.title = "註冊新帳號"
     }
+    
     private func configToolBarButton() {
         
         let backButton = UIButton()
@@ -42,6 +58,25 @@ class SignupViewController: UIViewController {
         backButton.addTarget(self, action: #selector(didTapBack), for: .touchUpInside)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
         self.navigationController?.isToolbarHidden = false
+        self.navigationItem.hidesBackButton = true
+    }
+    
+    private func configCollectionView() {
+        view.addSubview(questionCollectionView)
+        questionCollectionView.register(SignupCollectionviewCell.self, forCellWithReuseIdentifier: questionCollectionViewIdentifier)
+        questionCollectionView.delegate = self
+        questionCollectionView.dataSource = self
+    }
+    
+    private func configSignupButton() {
+        view.addSubview(signupButton)
+        signupButton.backgroundColor = .lightGray
+        signupButton.isUserInteractionEnabled = false
+        signupButton.layer.cornerRadius = 15
+        signupButton.setTitle("註冊", for: .normal)
+        signupButton.titleLabel?.font = .systemFont(ofSize: 24)
+        signupButton.addTarget(self, action: #selector(didTapSignup), for: .touchUpInside)
+        
     }
     
     private func configAutoLayout() {
@@ -57,22 +92,6 @@ class SignupViewController: UIViewController {
             self.signupButton.heightAnchor.constraint(equalToConstant: 50),
             self.signupButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
-    }
-    
-    private func configCollectionView() {
-        view.addSubview(questionCollectionView)
-        questionCollectionView.register(SignupCollectionviewCell.self, forCellWithReuseIdentifier: questionCollectionViewIdentifier)
-        questionCollectionView.delegate = self
-        questionCollectionView.dataSource = self
-    }
-    
-    private func configSignupButton() {
-        view.addSubview(signupButton)
-        signupButton.backgroundColor = .black
-        signupButton.layer.cornerRadius = 15
-        signupButton.setTitle("註冊", for: .normal)
-        signupButton.titleLabel?.font = .systemFont(ofSize: 24)
-
     }
     
     static func configFlowLayout() -> UICollectionViewCompositionalLayout {
@@ -100,6 +119,15 @@ class SignupViewController: UIViewController {
         navigationController?.popViewController(animated: true)
     }
     
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
+    @objc private func didTapSignup() {
+        UserDefaults.standard.set(passBackArray, forKey: "passBackArray")
+        navigationController?.popViewController(animated: true)
+    }
+    
 }
 
 extension SignupViewController: UICollectionViewDataSource {
@@ -112,6 +140,7 @@ extension SignupViewController: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: questionCollectionViewIdentifier, for: indexPath) as? SignupCollectionviewCell else { return UICollectionViewCell() }
         
         cell.getData(quesionSets: questionSets, index: indexPath.item)
+        cell.delegate = self
         return cell
     }
     
@@ -120,3 +149,4 @@ extension SignupViewController: UICollectionViewDataSource {
 extension SignupViewController: UICollectionViewDelegate {
     
 }
+

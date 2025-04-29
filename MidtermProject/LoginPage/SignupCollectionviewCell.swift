@@ -8,9 +8,10 @@
 import UIKit
 
 class SignupCollectionviewCell: UICollectionViewCell {
-    
+
     var questionSets: [String] = []
     var index: Int = 0
+    var delegate: SignupDelegate?
     private let questionLabel = UILabel()
     private let inputTextField = UITextField()
     private let stackView = UIStackView()
@@ -23,6 +24,8 @@ class SignupCollectionviewCell: UICollectionViewCell {
         configView()
         configAutoLayout()
         setupUnderline()
+        configTextField()
+        
     }
     
     required init?(coder: NSCoder) {
@@ -40,7 +43,37 @@ class SignupCollectionviewCell: UICollectionViewCell {
         configLabel()
         if index == 0 || index == 1 {
             configRequirementLabel()
+            inputTextField.addTarget(self, action: #selector(textfieldDidEndEditing_DigitSafe(_:)), for: .editingDidEnd)
+        } else {
+            inputTextField.addTarget(self, action: #selector(textfieldDidEndEditing(_:)), for: .editingDidEnd)
         }
+        
+    }
+    
+    func configTextField() {
+        inputTextField.keyboardType = .asciiCapable
+        inputTextField.autocapitalizationType = .none
+        inputTextField.spellCheckingType = .no
+        inputTextField.autocorrectionType = .no
+    }
+    
+    @objc func textfieldDidEndEditing_DigitSafe(_ textField: UITextField) {
+        
+        guard let text = inputTextField.text else { return }
+        
+        guard inputTextField.isDigitSafe(with: text) else {
+            self.requirementLabel.textColor = .red
+            return
+        }
+        self.delegate?.passInfo(info: text, index: index)
+        self.requirementLabel.textColor = .gray
+    }
+    
+    @objc func textfieldDidEndEditing(_ textField: UITextField) {
+        
+        guard let text = inputTextField.text else { return }
+        
+        self.delegate?.passInfo(info: text, index: index)
     }
     
     func configRequirementLabel() {
@@ -91,7 +124,6 @@ class SignupCollectionviewCell: UICollectionViewCell {
             stackView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             questionLabel.widthAnchor.constraint(equalToConstant: 220),
             inputTextField.widthAnchor.constraint(equalTo: self.widthAnchor)
-            
         ])
         
     }
