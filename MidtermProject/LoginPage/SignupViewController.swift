@@ -34,7 +34,7 @@ class SignupViewController: UIViewController, SignupDelegate {
     func passInfo(info: String, index: Int) {
         self.passBackArray[String(index)] = info
         
-        if passBackArray.count == questionSets.count , passBackArray["1"] == passBackArray["2"] {
+        if passBackArray.count == questionSets.count , passBackArray["1"] == passBackArray["2"], passBackArray["0"] != passBackArray["1"] {
             signupButton.isUserInteractionEnabled = true
             signupButton.backgroundColor = .black
         }

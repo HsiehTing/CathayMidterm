@@ -28,8 +28,8 @@ class LoginViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        configAccountInput()
-        configPasswordInput()
+        configAccountInputUnderLine()
+        configPasswordInputUnderLine()
     }
     
     private func configView() {
@@ -47,6 +47,27 @@ class LoginViewController: UIViewController {
         configSignUpButton()
         configLoginButton()
         configRememberCheckBox()
+        setUpTapGesture()
+        configTextField()
+        configTextFieldTarget()
+    }
+    
+    private func setUpTapGesture() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        self.view.addGestureRecognizer(tapGesture)
+    }
+    
+    func configTextField() {
+        accountInputTextField.keyboardType = .asciiCapable
+        accountInputTextField.autocapitalizationType = .none
+        accountInputTextField.spellCheckingType = .no
+        accountInputTextField.autocorrectionType = .no
+        
+        passwordInputTextField.keyboardType = .asciiCapable
+        passwordInputTextField.autocapitalizationType = .none
+        passwordInputTextField.spellCheckingType = .no
+        passwordInputTextField.autocorrectionType = .no
     }
     
     private func configStackView() {
@@ -80,13 +101,17 @@ class LoginViewController: UIViewController {
         return bottomLine
     }
     
-    private func configAccountInput() {
-        
+    private func configAccountInputUnderLine() {
         accountInputTextField.setUnderLine()
     }
     
-    private func configPasswordInput() {
+    private func configPasswordInputUnderLine() {
         passwordInputTextField.setUnderLine()
+    }
+    
+    private func configTextFieldTarget() {
+        accountInputTextField.addTarget(self, action: #selector(textFieldDidEndEditing(_:)), for: .editingDidEnd)
+        passwordInputTextField.addTarget(self, action: #selector(textFieldDidEndEditing(_:)), for: .editingDidEnd)
     }
     
     private func configSignUpButton() {
@@ -98,10 +123,12 @@ class LoginViewController: UIViewController {
     
     private func configLoginButton() {
         loginButton.setTitle("登入", for: .normal)
-        loginButton.backgroundColor = .black
+        loginButton.backgroundColor = .gray
+        loginButton.isUserInteractionEnabled = false
         loginButton.titleLabel?.font = .systemFont(ofSize: 24)
         loginButton.tintColor = .white
         loginButton.layer.cornerRadius = 15
+        loginButton.addTarget(self, action: #selector(didTapLoginButton), for: .touchUpInside)
     }
     
     private func configRememberCheckBox() {
@@ -171,6 +198,37 @@ class LoginViewController: UIViewController {
     @objc private func didTapSignUpPage() {
         let signupVC = SignupViewController()
         self.navigationController?.pushViewController(signupVC, animated: true)
+    }
+    
+    @objc private func didTapLoginButton() {
+        let textFieldAccountName = accountInputTextField.text
+        let textFieldPassword = passwordInputTextField.text
+        
+        guard let accountSets = UserDefaults.standard.object(forKey: "passBackArray") as? [String: String] else { return }
+        let accountName = accountSets["0"]
+        let password = accountSets["1"]
+        
+        //if textFieldAccountName == accountName , textFieldPassword == password {
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene, let window = windowScene.windows.first {
+                let tabBarController = TabBarViewController()
+                tabBarController.selectedIndex = 1
+                window.rootViewController = tabBarController
+                window.makeKeyAndVisible()
+            }
+       // }
+    }
+    
+    @objc func textFieldDidEndEditing(_ textField: UITextField) {
+        guard let accountName = accountInputTextField.text else { return }
+        guard let password = passwordInputTextField.text else { return }
+        if accountName.isEmpty == false, password.isEmpty == false {
+            self.loginButton.isUserInteractionEnabled = true
+            self.loginButton.backgroundColor = .black
+        }
+    }
+    
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
     }
 }
 
