@@ -28,7 +28,7 @@ open class TabBarViewController: UITabBarController {
         let newsVCItem = UITabBarItem(title: "新聞", image: UIImage(systemName: "bell.fill"), tag: 0)
         newsVC.tabBarItem = newsVCItem
         
-        let homeVC = HomePageViewController()
+        let homeVC = UINavigationController(rootViewController: HomePageViewController()) 
         let homeVCItem = UITabBarItem(title: "首頁", image: UIImage(systemName: "house.fill"), tag: 1)
         homeVC.tabBarItem = homeVCItem
 

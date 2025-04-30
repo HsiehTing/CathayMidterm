@@ -13,7 +13,8 @@ class LoginViewController: UIViewController {
     let passwordLabel = UILabel()
     let rememberMeLabel = UILabel()
     let loginButton = UIButton(type: .roundedRect)
-    let rememberCheckBox = UIButton(type: .custom, primaryAction: UIAction(handler: { _ in }))
+    let rememberCheckBox = UIButton(type: .custom,
+                                    primaryAction: UIAction(handler: { _ in }))
     let signUpButton = UIButton(type: .custom)
     let accountInputTextField = UITextField()
     let passwordInputTextField = UITextField()
@@ -211,7 +212,6 @@ class LoginViewController: UIViewController {
         //if textFieldAccountName == accountName , textFieldPassword == password {
             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene, let window = windowScene.windows.first {
                 let tabBarController = TabBarViewController()
-                tabBarController.selectedIndex = 1
                 window.rootViewController = tabBarController
                 window.makeKeyAndVisible()
             }

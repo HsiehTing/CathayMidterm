@@ -23,7 +23,7 @@ class SignupViewController: UIViewController, SignupDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setNavigationTitile()
+        setNavigationTitle()
         configCollectionView()
         configSignupButton()
         configAutoLayout()
@@ -46,7 +46,7 @@ class SignupViewController: UIViewController, SignupDelegate {
         self.view.addGestureRecognizer(tapGesture)
     }
     
-    private func setNavigationTitile() {
+    private func setNavigationTitle() {
         navigationItem.title = "註冊新帳號"
     }
     
