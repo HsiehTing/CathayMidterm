@@ -44,7 +44,6 @@ class HomePageCollectionViewCell: UICollectionViewCell, FetchAPIDelegate {
     func passData(data: [APIDataProtocol]) {
         switch index {
         case 0:
-//            guard let data = data as? [IndexData] else { return }
             
             DispatchQueue.main.async {
                 self.setUpColor(data: data)
@@ -88,7 +87,6 @@ class HomePageCollectionViewCell: UICollectionViewCell, FetchAPIDelegate {
         }
         
     }
-
     
     func getData(dataSet: [String: Any] , index: Int) {
         //TODO: 要用 switch 來轉換格式
@@ -99,7 +97,8 @@ class HomePageCollectionViewCell: UICollectionViewCell, FetchAPIDelegate {
     func setUpColor(data: [APIDataProtocol]) {
         guard let secondIndex = Double(data[1].indexValue) else { return }
         guard let lastIndex = Double(data[0].indexValue) else { return }
-        let indexTitle = titleSets[0]
+        guard let index = index else { return }
+        let indexTitle = titleSets[index]
         self.indexValueLabel.text = data[0].indexValue
         self.indexTitleLabel.text = indexTitle
         let changeInt = (lastIndex - secondIndex).rounded()
@@ -110,11 +109,14 @@ class HomePageCollectionViewCell: UICollectionViewCell, FetchAPIDelegate {
                 self.indexTitleLabel.textColor = .red
                 self.indexValueLabel.textColor = .red
                 self.changeLabel.text = "+\(changeInt) (\(roundedChangeRate)) ↑"
+                self.layer.borderColor = UIColor.red.cgColor
             } else {
                 self.changeLabel.textColor = .green
                 self.indexTitleLabel.textColor = .green
                 self.indexValueLabel.textColor = .green
                 self.changeLabel.text = "-\(changeInt) (\(roundedChangeRate)) ↓"
+                self.layer.borderColor = UIColor.green.cgColor
+                
             }
         
     }
@@ -126,9 +128,11 @@ class HomePageCollectionViewCell: UICollectionViewCell, FetchAPIDelegate {
         stackView.addArrangedSubview(changeLabel)
         stackView.axis = .vertical
         stackView.alignment = .center
-        stackView.spacing = 20
+        stackView.spacing = 10
         self.indexValueLabel.font = .systemFont(ofSize: 24)
         self.changeLabel.font = .systemFont(ofSize: 12)
+        self.layer.cornerRadius = 20
+        self.layer.borderWidth = 1
     }
     
     func configAutoLayout() {
@@ -140,12 +144,9 @@ class HomePageCollectionViewCell: UICollectionViewCell, FetchAPIDelegate {
             indexTitleLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 10),
             indexTitleLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
             stackView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            stackView.topAnchor.constraint(equalTo: indexTitleLabel.bottomAnchor, constant: 20),
-            stackView.topAnchor.constraint(equalTo: self.bottomAnchor, constant: -10),
+            stackView.topAnchor.constraint(equalTo: indexTitleLabel.bottomAnchor, constant: 25),
         ])
         
     }
-    
-
     
 }

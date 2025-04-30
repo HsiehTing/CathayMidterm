@@ -16,23 +16,12 @@ class HomePageViewController: UIViewController {
     private let homePageCollectionViewIdentifier = "homePageCollectionView"
     private let apiTool = APIFetchTool()
     private var apiData: [String: Any] = [:]
-    private let urlStringSet = [
-        "https://openapi.twse.com.tw/v1/exchangeReport/MI_INDEX4",
-        "https://openapi.twse.com.tw/v1/indicesReport/FRMSA",
-        "https://openapi.twse.com.tw/v1/indicesReport/TAI50I",
-        "https://openapi.twse.com.tw/v1/indicesReport/MI_5MINS_HIST",
-        "https://openapi.twse.com.tw/v1/indicesReport/MFI94U"
-    ]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setNavigationTitile()
         configView()
         configHomePageCollectionViewAutoLayout()
-//        DispatchQueue.main.async {
-//            self.apiTool.dataTAsk(urlString: self.urlStringSet[0])
-//            self.homePageCollectionView.reloadData()
-//        }
     }
     
     private func configView() {
@@ -43,7 +32,7 @@ class HomePageViewController: UIViewController {
     }
     
     private func setNavigationTitile() {
-        navigationItem.title = "註冊新帳號"
+        navigationItem.title = "昨日收盤指數"
     }
     
     private func configHomePageCollectionViewAutoLayout() {
@@ -61,17 +50,16 @@ class HomePageViewController: UIViewController {
         let layOut = UICollectionViewCompositionalLayout { _, _ in
             
             let itemSize = NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(1.0),
+                widthDimension: .fractionalWidth(0.5),
                 heightDimension: .fractionalHeight(1.0)
             )
             let groupSize = NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1.0),
-                heightDimension: .absolute(150)
+                heightDimension: .fractionalHeight(0.3)
             )
             let item = NSCollectionLayoutItem(layoutSize: itemSize)
-            item.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
-            let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 2)
-            
+            item.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 30, trailing: 10)
+            let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, repeatingSubitem: item, count: 2)
             let section = NSCollectionLayoutSection(group: group)
             return section
         }
@@ -89,14 +77,25 @@ extension HomePageViewController: UICollectionViewDataSource {
         guard let cell = self.homePageCollectionView.dequeueReusableCell(withReuseIdentifier: homePageCollectionViewIdentifier, for: indexPath) as? HomePageCollectionViewCell else { return UICollectionViewCell() }
         
         cell.getData(dataSet: self.apiData, index: indexPath.row)
-        
+
         return cell
     }
     
+    @objc private func didTapSignUpPage() {
+        let signupVC = SignupViewController()
+        self.navigationController?.pushViewController(signupVC, animated: true)
+    }
     
 }
 
 extension HomePageViewController: UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let titleSets = ["櫃買指數", "寶島指數", "臺灣 50", "加權指數", "加權報酬指數"]
+        let stockVC = StockDayViewController()
+        stockVC.navigationTitle = titleSets[indexPath.item]
+        self.navigationController?.pushViewController(stockVC, animated: true)
+    }
     
 }
 

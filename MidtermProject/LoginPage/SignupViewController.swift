@@ -51,7 +51,6 @@ class SignupViewController: UIViewController, SignupDelegate {
     }
     
     private func configToolBarButton() {
-        
         let backButton = UIButton()
         backButton.setImage(UIImage(systemName: "chevron.left"), for: .normal)
         backButton.tintColor = .black

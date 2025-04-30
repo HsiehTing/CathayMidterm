@@ -1,8 +1,8 @@
 //
-//  APIModel.swift
+//  IndexAPIModel.swift
 //  MidtermProject
 //
-//  Created by TWINB00599242 on 2025/4/29.
+//  Created by TWINB00599242 on 2025/4/30.
 //
 
 protocol APIDataProtocol {
