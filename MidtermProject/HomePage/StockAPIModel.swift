@@ -31,12 +31,14 @@ struct StockAPIMonthYear: Codable {
     let name: String
     let highestPrice: String
     let lowestPrice: String
+    let transaction: String
     
     enum CodingKeys: String, CodingKey {
         case code = "Code"
         case name = "Name"
         case highestPrice = "HighestPrice"
         case lowestPrice = "LowestPrice"
+        case transaction = "Transaction"
     }
 }
 extension StockAPIMonthYear: StockAPIDataProtocol {

@@ -17,9 +17,10 @@ class StockDayViewController: UIViewController {
     private let stockInfoArray: [StockAPIDataProtocol] = []
     private let stockDayCollectionView = UICollectionView(frame: .zero, collectionViewLayout: configFlowLayout())
     private let stockCollectionViewReuseIdentifier = "stockCollectionViewReuseIdentifier"
-    private let apiTool = StockAPIFetchTool()
+    private let apiTool = StockAPIFetchTool.shared
     private let dropDownButton = UIButton(type: .custom)
     private let segmentedControl = UISegmentedControl()
+    var cellData: CellData?
     
     var navigationTitle: String?
     private let apiURL: [String] = [
@@ -39,23 +40,24 @@ class StockDayViewController: UIViewController {
     
     private func fetchAPI() {
         fetchDayAPI()
-        fetchMonthAPI()
-        fetchYearAPI()
+        
     }
     
     private func fetchDayAPI() {
-        self.apiTool.dataTAsk(urlString: self.apiURL[0], index: 0) { data in
-            guard let data = data else { return }
-            
-            do {
-                let decodedData = try JSONDecoder().decode([StockAPIDay].self, from: data)
-                DispatchQueue.main.async {
-                    print("data 1 count \(decodedData.count)")
+            self.apiTool.dataTAsk(urlString: self.apiURL[0], index: 0) { data in
+                guard let data = data else { return }
+                
+                do {
+                    let decodedData = try JSONDecoder().decode([StockAPIDay].self, from: data)
+                    DispatchQueue.main.async {
+                        print("data 1 count \(decodedData.count)")
+                        self.cellData = .day(decodedData)
+                        self.stockDayCollectionView.reloadData()
+                    }
+                } catch {
+                    print("decoded failed")
                 }
-            } catch {
-                print("decoded failed")
             }
-        }
     }
     
     private func fetchMonthAPI() {
@@ -66,6 +68,8 @@ class StockDayViewController: UIViewController {
                 let decodedData = try JSONDecoder().decode([StockAPIMonthYear].self, from: data)
                 DispatchQueue.main.async {
                     print("data 2 count \(decodedData.count)")
+                    self.cellData = .monthOrYear(decodedData)
+                    self.stockDayCollectionView.reloadData()
                 }
             } catch {
                 print("decoded failed 2 \(error)")
@@ -80,6 +84,8 @@ class StockDayViewController: UIViewController {
                 let decodedData = try JSONDecoder().decode([StockAPIMonthYear].self, from: data)
                 DispatchQueue.main.async {
                     print("data 3 count \(decodedData.count)")
+                    self.cellData = .monthOrYear(decodedData)
+                    self.stockDayCollectionView.reloadData()
                 }
             } catch {
                 print("decoded failed 3 \(error)")
@@ -99,13 +105,11 @@ class StockDayViewController: UIViewController {
         stockDayCollectionView.register(StockDayCollectionViewCell.self, forCellWithReuseIdentifier: stockCollectionViewReuseIdentifier)
         stockDayCollectionView.delegate = self
         stockDayCollectionView.dataSource = self
-        stockDayCollectionView.backgroundColor = .red
     }
     
     private func configDropDownButton() {
         view.addSubview(dropDownButton)
-        var buttonTitleString = "個股日成交量"
-        dropDownButton.setTitle(buttonTitleString, for: .normal)
+        dropDownButton.setTitle("個股日成交量", for: .normal)
         dropDownButton.showsMenuAsPrimaryAction = true
         dropDownButton.backgroundColor = .darkGray
         dropDownButton.menu = UIMenu(children: [
@@ -113,16 +117,19 @@ class StockDayViewController: UIViewController {
                 let title = "個股日成交量"
                 self.navigationItem.title = title
                 self.dropDownButton.setTitle(title, for: .normal)
+                self.fetchDayAPI()
             }),
             UIAction(title: "個股月成交量", handler: { action in
                 let title = "個股月成交量"
                 self.navigationItem.title = title
                 self.dropDownButton.setTitle(title, for: .normal)
+                self.fetchMonthAPI()
             }),
             UIAction(title: "個股年成交量", handler: { action in
                 let title = "個股年成交量"
                 self.navigationItem.title = title
                 self.dropDownButton.setTitle(title, for: .normal)
+                self.fetchYearAPI()
             }),
         ])
     }
@@ -211,17 +218,36 @@ class StockDayViewController: UIViewController {
 extension StockDayViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        stockInfoArray.count
+        switch cellData {
+        case .day(let dayData):
+            return dayData.count
+        case .monthOrYear(let monthYearData):
+            return monthYearData.count
+        default:
+            return 0
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = stockDayCollectionView.dequeueReusableCell(withReuseIdentifier: stockCollectionViewReuseIdentifier, for: indexPath) as? StockDayCollectionViewCell else { return UICollectionViewCell()}
         
+        guard let cellData = self.cellData else {return UICollectionViewCell()}
+        cell.getData(cellData: cellData, index: indexPath.item)
+        
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        <#code#>
     }
     
 }
 
 extension StockDayViewController: UICollectionViewDelegate {
     
+}
+
+enum CellData {
+    case day([StockAPIDay])
+    case monthOrYear([StockAPIMonthYear])
 }

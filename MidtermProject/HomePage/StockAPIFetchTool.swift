@@ -12,9 +12,9 @@ protocol FetchStockAPIDelegate {
 
 class StockAPIFetchTool {
     
-    var delegate: FetchStockAPIDelegate?
+    public var delegate: FetchStockAPIDelegate?
     static let shared = StockAPIFetchTool()
-    private let cache = NSCache<NSString, NSData>()
+    public let cache = NSCache<NSString, NSData>()
     
     func dataTAsk(urlString: String, index: Int, completion: @escaping (Data?) -> Void) {
         
