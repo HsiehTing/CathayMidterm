@@ -7,27 +7,28 @@
 
 import UIKit
 
-//TODO: collectionView 加上 header 寫上標題資訊
-//TODO: 每進一次頁面都要打 API 既然已經快取了 可以判斷是否快取有資料後再打
-//TODO: 畫面下面空格消除
-//TODO: 顯示出api 資訊，並且透過不同的下拉選單來切換
-
 class StockDayViewController: UIViewController {
     
-    private let stockInfoArray: [StockAPIDataProtocol] = []
     private let stockDayCollectionView = UICollectionView(frame: .zero, collectionViewLayout: configFlowLayout())
     private let stockCollectionViewReuseIdentifier = "stockCollectionViewReuseIdentifier"
+    private let stockCollectionHeaderViewReuseIdentifier = "stockCollectionHeaderViewReuseIdentifier"
     private let apiTool = StockAPIFetchTool.shared
     private let dropDownButton = UIButton(type: .custom)
     private let segmentedControl = UISegmentedControl()
-    var cellData: CellData?
-    
-    var navigationTitle: String?
+    private let cell = StockDayCollectionViewCell()
     private let apiURL: [String] = [
         "https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL",
         "https://openapi.twse.com.tw/v1/exchangeReport/FMSRFK_ALL",
         "https://openapi.twse.com.tw/v1/exchangeReport/FMNPTK_ALL"
     ]
+    private var headerTitleArray: [String] = ["代號","名稱","價格","價格變動","變動比例","自選"]
+    
+    private var selectedItems = {
+        UserDefaults.standard.stringArray(forKey: "selectedItems")
+    }() ?? []
+    public var cellData: CellData?
+    public var filteredCellData: CellData?
+    public var navigationTitle: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,28 +41,29 @@ class StockDayViewController: UIViewController {
     
     private func fetchAPI() {
         fetchDayAPI()
-        
     }
     
     private func fetchDayAPI() {
-            self.apiTool.dataTAsk(urlString: self.apiURL[0], index: 0) { data in
-                guard let data = data else { return }
-                
-                do {
-                    let decodedData = try JSONDecoder().decode([StockAPIDay].self, from: data)
-                    DispatchQueue.main.async {
-                        print("data 1 count \(decodedData.count)")
-                        self.cellData = .day(decodedData)
-                        self.stockDayCollectionView.reloadData()
-                    }
-                } catch {
-                    print("decoded failed")
+        self.apiTool.dataTask(urlString: self.apiURL[0], index: 0) { data in
+            guard let data = data else { return }
+            
+            do {
+                let decodedData = try JSONDecoder().decode([StockAPIDay].self, from: data)
+                DispatchQueue.main.async {
+                    print("data 1 count \(decodedData.count)")
+                    self.cellData = .day(decodedData)
+                    self.filteredCellData = self.cellData
+                    self.headerTitleArray =  ["代號","名稱","價格","價格變動","變動比例","自選"]
+                    self.stockDayCollectionView.reloadData()
                 }
+            } catch {
+                print("decoded failed")
             }
+        }
     }
     
     private func fetchMonthAPI() {
-        self.apiTool.dataTAsk(urlString: self.apiURL[1], index: 1) { data in
+        self.apiTool.dataTask(urlString: self.apiURL[1], index: 1) { data in
             guard let data = data else { return }
             
             do {
@@ -69,6 +71,8 @@ class StockDayViewController: UIViewController {
                 DispatchQueue.main.async {
                     print("data 2 count \(decodedData.count)")
                     self.cellData = .monthOrYear(decodedData)
+                    self.filteredCellData = self.cellData
+                    self.headerTitleArray =  ["代號","名稱","最高價格","最低價格","交易筆數","自選"]
                     self.stockDayCollectionView.reloadData()
                 }
             } catch {
@@ -78,13 +82,15 @@ class StockDayViewController: UIViewController {
     }
     
     private func fetchYearAPI() {
-        self.apiTool.dataTAsk(urlString: self.apiURL[2], index: 2) { data in
+        self.apiTool.dataTask(urlString: self.apiURL[2], index: 2) { data in
             guard let data = data else { return }
             do {
                 let decodedData = try JSONDecoder().decode([StockAPIMonthYear].self, from: data)
                 DispatchQueue.main.async {
                     print("data 3 count \(decodedData.count)")
                     self.cellData = .monthOrYear(decodedData)
+                    self.filteredCellData = self.cellData
+                    self.headerTitleArray =  ["代號","名稱","最高價格","最低價格","交易筆數","自選"]
                     self.stockDayCollectionView.reloadData()
                 }
             } catch {
@@ -92,6 +98,22 @@ class StockDayViewController: UIViewController {
             }
         }
         self.reloadInputViews()
+    }
+    
+    private func filterData(by code: String) {
+        guard let cellData = self.cellData else { return }
+
+        switch cellData {
+        case .day(let data):
+            let filtered = data.filter { $0.code.contains(code) }
+            self.filteredCellData = .day(filtered)
+
+        case .monthOrYear(let data):
+            let filtered = data.filter { $0.code.contains(code) }
+            self.filteredCellData = .monthOrYear(filtered)
+        }
+        
+        stockDayCollectionView.reloadData()
     }
     
     private func configView() {
@@ -103,6 +125,8 @@ class StockDayViewController: UIViewController {
     private func congfigCollectionView() {
         view.addSubview(stockDayCollectionView)
         stockDayCollectionView.register(StockDayCollectionViewCell.self, forCellWithReuseIdentifier: stockCollectionViewReuseIdentifier)
+        stockDayCollectionView.register(StockDayColectionViewHeaderViewCell.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+                                        withReuseIdentifier: stockCollectionHeaderViewReuseIdentifier)
         stockDayCollectionView.delegate = self
         stockDayCollectionView.dataSource = self
     }
@@ -145,12 +169,13 @@ class StockDayViewController: UIViewController {
         segmentedControl.setTitleTextAttributes([
             NSAttributedString.Key.font : UIFont(name: "HelveticaNeue", size: 18),
             NSAttributedString.Key.foregroundColor: UIColor.lightGray
-            ], for: .normal)
+        ], for: .normal)
         segmentedControl.setTitleTextAttributes([
             NSAttributedString.Key.font : UIFont(name: "HelveticaNeue", size: 18),
             NSAttributedString.Key.foregroundColor: UIColor.black
-            ], for: .selected)
-
+        ], for: .selected)
+        segmentedControl.addTarget(self, action: #selector(didTapSegmentControl(_:)), for: .valueChanged)
+        
     }
     
     private func configNavigationTitle() {
@@ -169,10 +194,20 @@ class StockDayViewController: UIViewController {
                 widthDimension: .fractionalWidth(1.0),
                 heightDimension: .fractionalHeight(0.1)
             )
+            let headerSize = NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1.0),
+                heightDimension: .absolute(40)
+            )
+            let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(
+                layoutSize: headerSize,
+                elementKind: UICollectionView.elementKindSectionHeader,
+                alignment: .top
+            )
             let item = NSCollectionLayoutItem(layoutSize: itemSize)
             item.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 5, bottom: 10, trailing: 5)
             let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, repeatingSubitem: item, count: 6)
             let section = NSCollectionLayoutSection(group: group)
+            section.boundarySupplementaryItems = [sectionHeader]
             return section
         }
         return layOut
@@ -185,9 +220,18 @@ class StockDayViewController: UIViewController {
         backButton.tintColor = .black
         backButton.addTarget(self, action: #selector(didTapBack), for: .touchUpInside)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+               barButtonSystemItem: .search,
+               target: self,
+               action: #selector(didTapSearchButton)
+           )
+        guard let rightButton = navigationItem.rightBarButtonItem else { return }
+        rightButton.tintColor = .black
+        
         self.navigationController?.isToolbarHidden = false
         self.navigationItem.hidesBackButton = true
-
+        
     }
     
     private func configAutoLayout() {
@@ -213,12 +257,56 @@ class StockDayViewController: UIViewController {
         self.navigationController?.popViewController(animated: true)
     }
     
+    @objc private func didTapSegmentControl(_ sender: UISegmentedControl) {
+        guard let cellData = self.cellData else { return }
+       
+        switch sender.selectedSegmentIndex {
+        case 0:
+            
+            self.filteredCellData = cellData
+        case 1:
+            
+            switch cellData {
+            case .day(let data):
+                let filtered = data.filter { selectedItems.contains($0.code) }
+                self.filteredCellData = .day(filtered)
+            case .monthOrYear(let data):
+                let filtered = data.filter { selectedItems.contains($0.code) }
+                self.filteredCellData = .monthOrYear(filtered)
+            }
+            
+        default: break
+            
+        }
+        stockDayCollectionView.reloadData()
+    }
+    
+    @objc private func didTapSearchButton() {
+        let alert = UIAlertController(title: "搜尋代號", message: "輸入股票代號", preferredStyle: .alert)
+        alert.addTextField { textField in
+            textField.placeholder = "輸入代號..."
+        }
+
+        let searchAction = UIAlertAction(title: "搜尋", style: .default) { [weak self] _ in
+            guard let self = self,
+                  let code = alert.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines),
+                  !code.isEmpty else { return }
+
+            self.filterData(by: code)
+        }
+
+        alert.addAction(searchAction)
+        alert.addAction(UIAlertAction(title: "取消", style: .cancel))
+        present(alert, animated: true)
+    }
+
 }
 
 extension StockDayViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        switch cellData {
+        
+        switch filteredCellData {
         case .day(let dayData):
             return dayData.count
         case .monthOrYear(let monthYearData):
@@ -229,18 +317,49 @@ extension StockDayViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = stockDayCollectionView.dequeueReusableCell(withReuseIdentifier: stockCollectionViewReuseIdentifier, for: indexPath) as? StockDayCollectionViewCell else { return UICollectionViewCell()}
+        guard let cell = stockDayCollectionView.dequeueReusableCell(withReuseIdentifier: stockCollectionViewReuseIdentifier, for: indexPath) as? StockDayCollectionViewCell else { return UICollectionViewCell() }
         
-        guard let cellData = self.cellData else {return UICollectionViewCell()}
-        cell.getData(cellData: cellData, index: indexPath.item)
+        guard let filteredCellData = self.filteredCellData else { return UICollectionViewCell() }
+        
+        cell.getData(cellData: filteredCellData, selectedItems: selectedItems, index: indexPath.item)
+        
+        cell.starButtonAppendCallBack = { [weak self] code in
+            guard let self = self else { return }
+            self.selectedItems.append(code)
+            UserDefaults.standard.set(self.selectedItems, forKey: "selectedItems")
+            self.stockDayCollectionView.reloadData()
+        }
+        
+        cell.starButtonRemoveCallBack = { [weak self] code in
+            guard let self = self else { return }
+            self.selectedItems = self.selectedItems.filter { $0 != code }
+            UserDefaults.standard.set(self.selectedItems, forKey: "selectedItems")
+            self.stockDayCollectionView.reloadData()
+        }
         
         return cell
     }
     
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        <#code#>
+    func collectionView(_ collectionView: UICollectionView,
+                        viewForSupplementaryElementOfKind kind: String,
+                        at indexPath: IndexPath) -> UICollectionReusableView {
+        
+        if kind == UICollectionView.elementKindSectionHeader {
+            
+            guard let headerView = collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind, withReuseIdentifier: stockCollectionHeaderViewReuseIdentifier, for: indexPath)
+                    as? StockDayColectionViewHeaderViewCell else { return UICollectionReusableView() }
+            
+            headerView.getHeaderData(titleArray: self.headerTitleArray)
+            
+            return headerView
+            
+        } else {
+            
+            return UICollectionReusableView()
+            
+        }
     }
-    
 }
 
 extension StockDayViewController: UICollectionViewDelegate {
@@ -251,3 +370,6 @@ enum CellData {
     case day([StockAPIDay])
     case monthOrYear([StockAPIMonthYear])
 }
+
+
+

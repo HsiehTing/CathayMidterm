@@ -89,9 +89,7 @@ class HomePageCollectionViewCell: UICollectionViewCell, FetchAPIDelegate {
     }
     
     func getData(dataSet: [String: Any] , index: Int) {
-        //TODO: 要用 switch 來轉換格式
         self.index = index
-
     }
     
     func setUpColor(data: [APIDataProtocol]) {

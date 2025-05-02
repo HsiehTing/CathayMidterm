@@ -17,7 +17,10 @@ class StockDayCollectionViewCell: UICollectionViewCell {
     private let fifthLabel = UILabel()
     private let stackView = UIStackView()
     private let starButton = UIButton(type: .custom)
-    
+    private var selectedItems: [String]?
+    public var starButtonAppendCallBack: ((String) -> Void)?
+    public var starButtonRemoveCallBack: ((String) -> Void)?
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         configView()
@@ -28,10 +31,12 @@ class StockDayCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    open func getData(cellData: CellData, index: Int) {
+    open func getData(cellData: CellData, selectedItems: [String], index: Int) {
+        self.selectedItems = selectedItems
         self.cellData = cellData
         self.index = index
         setUpLabelText()
+        setUpStarButton()
     }
     
     private func configView() {
@@ -39,6 +44,32 @@ class StockDayCollectionViewCell: UICollectionViewCell {
         self.addSubview(stackView)
         configStackView()
         configStackViewAutoLayout()
+        setUpStarButton()
+    }
+    
+    private func setUpStarButton() {
+        guard let index = self.index else { return }
+        guard let selectedItems = self.selectedItems else { return }
+        starButton.addTarget(self, action: #selector(didTapStarButton), for: .touchUpInside)
+        switch cellData {
+        case .day(let data):
+            if selectedItems.contains(where: { $0 == data[index].code }) {
+                self.starButton.isSelected = true
+            } else {
+                self.starButton.isSelected = false
+            }
+            
+        case .monthOrYear(let data):
+            if selectedItems.contains(where: { $0 == data[index].code }) {
+                self.starButton.isSelected = true
+            } else {
+                self.starButton.isSelected = false
+            }
+            
+        default:
+                self.starButton.isSelected = false
+        }
+        
     }
     
     private func setUpLabelText() {
@@ -47,8 +78,7 @@ class StockDayCollectionViewCell: UICollectionViewCell {
         case .day(let dayData):
             guard
                    let value = Float(dayData[index].closingPrice),
-                   let change = Float(dayData[index].change),
-                   let changeDouble = Double(dayData[index].change)
+                   let change = Float(dayData[index].change)
                else {
                    return
                }
@@ -59,11 +89,10 @@ class StockDayCollectionViewCell: UICollectionViewCell {
             formatter.minimumIntegerDigits = 1
             formatter.maximumFractionDigits = 2
             formatter.numberStyle = .decimal
-            let formattedChange = formatter.string(from: NSNumber(value: roundedChangeRate))
             firstLabel.text = dayData[index].code
             secondLabel.text = dayData[index].name
             thirdLabel.text = dayData[index].closingPrice
-            fourthLabel.text = String(change)
+            fourthLabel.text = "\(change)"
             fifthLabel.text = "\(roundedChangeRate)%"
            
             
@@ -81,8 +110,10 @@ class StockDayCollectionViewCell: UICollectionViewCell {
             fifthLabel.text = "error"
            
         }
+    }
+    
+    private func configColor() {
         
-       
     }
     
     private func configStackView() {
@@ -99,16 +130,13 @@ class StockDayCollectionViewCell: UICollectionViewCell {
         thirdLabel.font = .systemFont(ofSize: 12, weight: .medium)
         fourthLabel.font = .systemFont(ofSize: 12, weight: .medium)
         fifthLabel.font = .systemFont(ofSize: 12, weight: .medium)
+        
         starButton.setImage(starImage, for: .normal)
         starButton.setImage(starFillImage, for: .selected)
         starButton.tintColor = .systemYellow
         stackView.axis = .horizontal
         stackView.alignment = .fill
         stackView.distribution = .fill
-    }
-    
-    private func configColor() {
-        
     }
     
     private func configStackViewAutoLayout() {
@@ -132,9 +160,17 @@ class StockDayCollectionViewCell: UICollectionViewCell {
             fourthLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor, multiplier: 0.15),
             fifthLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor, multiplier: 0.15),
             starButton.widthAnchor.constraint(equalTo: stackView.widthAnchor, multiplier: 0.1),
-
         ])
         
     }
     
+    @objc private func didTapStarButton() {
+        starButton.isSelected.toggle()
+        guard let code = self.firstLabel.text else { return }
+        if starButton.isSelected {
+            starButtonAppendCallBack?(code)
+        } else {
+            starButtonRemoveCallBack?(code)
+        }
+    }
 }

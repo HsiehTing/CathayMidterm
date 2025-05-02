@@ -24,7 +24,7 @@ open class TabBarViewController: UITabBarController {
     }
     
     func setUpViewController() {
-        let newsVC = newsPageViewController()
+        let newsVC = UINavigationController(rootViewController: NewsPageViewController())
         let newsVCItem = UITabBarItem(title: "新聞", image: UIImage(systemName: "bell.fill"), tag: 0)
         newsVC.tabBarItem = newsVCItem
         
@@ -32,7 +32,7 @@ open class TabBarViewController: UITabBarController {
         let homeVCItem = UITabBarItem(title: "首頁", image: UIImage(systemName: "house.fill"), tag: 1)
         homeVC.tabBarItem = homeVCItem
 
-        let settingVC = settingPageViewController()
+        let settingVC = UINavigationController(rootViewController: SettingPageViewController())
         let settingVCItem = UITabBarItem(title: "設定", image: UIImage(systemName: "gear"), tag: 2)
         settingVC.tabBarItem = settingVCItem
         

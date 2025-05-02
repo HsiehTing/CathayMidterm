@@ -16,7 +16,7 @@ class StockAPIFetchTool {
     static let shared = StockAPIFetchTool()
     public let cache = NSCache<NSString, NSData>()
     
-    func dataTAsk(urlString: String, index: Int, completion: @escaping (Data?) -> Void) {
+    func dataTask(urlString: String, index: Int, completion: @escaping (Data?) -> Void) {
         
         if let cachedData = cache.object(forKey: urlString as NSString) {
             print("快取資料")

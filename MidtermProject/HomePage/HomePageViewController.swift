@@ -14,7 +14,6 @@ class HomePageViewController: UIViewController {
         frame: .zero, collectionViewLayout: configFlowLayout()
     )
     private let homePageCollectionViewIdentifier = "homePageCollectionView"
-    private let apiTool = APIFetchTool()
     private var apiData: [String: Any] = [:]
     
     override func viewDidLoad() {
