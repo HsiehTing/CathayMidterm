@@ -7,7 +7,6 @@
 import UIKit
 
 class ChangeInfoViewController: UIViewController, ChangeInfoDelegate {
-    
     private let changeInfoCollectionView = UICollectionView(
         frame: .zero, collectionViewLayout: SignupViewController.configFlowLayout()
     )
@@ -26,16 +25,12 @@ class ChangeInfoViewController: UIViewController, ChangeInfoDelegate {
         configAutoLayout()
         setUpTapGesture()
     }
-    
     private func getPersonalInfo() {
-        
         guard let data = UserDefaults.standard.object(forKey: "PersonalInfo") as? [String: String] else { return }
         passBackArray = data
     }
-    
     func passInfo(info: String, question: String) {
         self.passBackArray[question] = info
-        
         if  passBackArray[question]?.isEmpty == false {
             confirmButton.isUserInteractionEnabled = true
             confirmButton.backgroundColor = .black
@@ -43,19 +38,15 @@ class ChangeInfoViewController: UIViewController, ChangeInfoDelegate {
             confirmButton.isUserInteractionEnabled = false
             confirmButton.backgroundColor = .lightGray
         }
-        
     }
-    
     func setUpTapGesture() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
         self.view.addGestureRecognizer(tapGesture)
     }
-    
     private func setNavigationTitle() {
         navigationItem.title = "變更個人資料"
     }
-    
     private func configButton() {
         view.addSubview(confirmButton)
         confirmButton.setTitle("確認變更", for: .normal)
@@ -66,20 +57,18 @@ class ChangeInfoViewController: UIViewController, ChangeInfoDelegate {
         confirmButton.layer.cornerRadius = 12
         confirmButton.addTarget(self, action: #selector(didTapSignup), for: .touchUpInside)
     }
-    
     private func configCollectionView() {
         view.addSubview(changeInfoCollectionView)
-        changeInfoCollectionView.register(ChangeInfoCollectionViewCell.self, forCellWithReuseIdentifier: changeInfoCollectionViewIdentifier)
+        changeInfoCollectionView.register(
+            ChangeInfoCollectionViewCell.self,
+                                          forCellWithReuseIdentifier: changeInfoCollectionViewIdentifier)
         changeInfoCollectionView.delegate = self
         changeInfoCollectionView.dataSource = self
     }
-    
     private func configAutoLayout() {
         changeInfoCollectionView.translatesAutoresizingMaskIntoConstraints = false
         confirmButton.translatesAutoresizingMaskIntoConstraints = false
-        
         NSLayoutConstraint.activate([
-            
             changeInfoCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             changeInfoCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             changeInfoCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
@@ -88,14 +77,10 @@ class ChangeInfoViewController: UIViewController, ChangeInfoDelegate {
             confirmButton.widthAnchor.constraint(equalToConstant: 360),
             confirmButton.heightAnchor.constraint(equalToConstant: 60),
             confirmButton.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -30)
-            
         ])
     }
-    
     static func configFlowLayout() -> UICollectionViewCompositionalLayout {
-        
         let layOut = UICollectionViewCompositionalLayout { _, _ in
-            
             let itemSize = NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1.0),
                 heightDimension: .fractionalHeight(0.2)
@@ -112,35 +97,30 @@ class ChangeInfoViewController: UIViewController, ChangeInfoDelegate {
         }
         return layOut
     }
-    
     @objc private func dismissKeyboard() {
         view.endEditing(true)
     }
-    
     @objc private func didTapSignup() {
         UserDefaults.standard.set(passBackArray, forKey: "PersonalInfo")
         navigationController?.popViewController(animated: true)
     }
-    
 }
 
 extension ChangeInfoViewController: UICollectionViewDelegate {
-    
 }
-
 extension ChangeInfoViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let infoQuestion = signupVC.questionSets.dropFirst(3)
         return infoQuestion.count
     }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let infoQuestion = signupVC.questionSets.dropFirst(3)
-        guard let cell = changeInfoCollectionView.dequeueReusableCell(withReuseIdentifier: changeInfoCollectionViewIdentifier, for: indexPath) as? ChangeInfoCollectionViewCell else { return UICollectionViewCell() }
+        guard let cell = changeInfoCollectionView.dequeueReusableCell(
+            withReuseIdentifier: changeInfoCollectionViewIdentifier,
+            for: indexPath) as? ChangeInfoCollectionViewCell else { return UICollectionViewCell() }
         cell.getData(questionSet: Array(infoQuestion), index: indexPath.item)
         cell.delegate = self
         return cell
     }
-    
-    
 }

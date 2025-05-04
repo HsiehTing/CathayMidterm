@@ -9,7 +9,6 @@ struct NewsAPIModel : Codable {
     let title: String
     let url: String
     let date: String
-    
     enum CodingKeys: String, CodingKey {
         case title = "Title"
         case url = "Url"

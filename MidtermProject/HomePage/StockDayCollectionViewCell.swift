@@ -26,11 +26,9 @@ class StockDayCollectionViewCell: UICollectionViewCell {
         configView()
         configColor()
     }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
     open func getData(cellData: CellData, selectedItems: [String], index: Int) {
         self.selectedItems = selectedItems
         self.cellData = cellData
@@ -39,15 +37,12 @@ class StockDayCollectionViewCell: UICollectionViewCell {
         setUpStarButton()
         configColor()
     }
-    
     private func configView() {
-    
         self.addSubview(stackView)
         configStackView()
         configStackViewAutoLayout()
         setUpStarButton()
     }
-    
     private func setUpStarButton() {
         guard let index = self.index else { return }
         guard let selectedItems = self.selectedItems else { return }
@@ -59,20 +54,16 @@ class StockDayCollectionViewCell: UICollectionViewCell {
             } else {
                 self.starButton.isSelected = false
             }
-            
         case .monthOrYear(let data):
             if selectedItems.contains(where: { $0 == data[index].code }) {
                 self.starButton.isSelected = true
             } else {
                 self.starButton.isSelected = false
             }
-            
         default:
                 self.starButton.isSelected = false
         }
-        
     }
-    
     private func setUpLabelText() {
         guard let index = self.index else { return }
         switch cellData {
@@ -95,8 +86,6 @@ class StockDayCollectionViewCell: UICollectionViewCell {
             thirdLabel.text = dayData[index].closingPrice
             fourthLabel.text = "\(change)"
             fifthLabel.text = "\(roundedChangeRate)%"
-           
-            
         case.monthOrYear(let monthYearData):
             firstLabel.text = monthYearData[index].code
             secondLabel.text = monthYearData[index].name
@@ -109,12 +98,9 @@ class StockDayCollectionViewCell: UICollectionViewCell {
             thirdLabel.text = "error"
             fourthLabel.text = "error"
             fifthLabel.text = "error"
-           
         }
     }
-    
     private func configColor() {
-        
         switch cellData {
         case .day(let data):
             guard let index = self.index else { return }
@@ -129,9 +115,7 @@ class StockDayCollectionViewCell: UICollectionViewCell {
         default:
             break
         }
-        
     }
-    
     private func configStackView() {
         let starImage = UIImage(systemName: "star")?.withRenderingMode(.alwaysTemplate)
         let starFillImage = UIImage(systemName: "star.fill")?.withRenderingMode(.alwaysTemplate)
@@ -151,7 +135,6 @@ class StockDayCollectionViewCell: UICollectionViewCell {
         thirdLabel.textColor = .green
         fourthLabel.textColor = .green
         fifthLabel.textColor = .green
-        
         starButton.setImage(starImage, for: .normal)
         starButton.setImage(starFillImage, for: .selected)
         starButton.tintColor = .systemYellow
@@ -159,7 +142,6 @@ class StockDayCollectionViewCell: UICollectionViewCell {
         stackView.alignment = .fill
         stackView.distribution = .fill
     }
-    
     private func configStackViewAutoLayout() {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         firstLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -168,7 +150,6 @@ class StockDayCollectionViewCell: UICollectionViewCell {
         fourthLabel.translatesAutoresizingMaskIntoConstraints = false
         fifthLabel.translatesAutoresizingMaskIntoConstraints = false
         starButton.translatesAutoresizingMaskIntoConstraints = false
-        
         NSLayoutConstraint.activate([
             stackView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             stackView.topAnchor.constraint(equalTo: self.topAnchor),
@@ -180,11 +161,9 @@ class StockDayCollectionViewCell: UICollectionViewCell {
             thirdLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor, multiplier: 0.15),
             fourthLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor, multiplier: 0.15),
             fifthLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor, multiplier: 0.15),
-            starButton.widthAnchor.constraint(equalTo: stackView.widthAnchor, multiplier: 0.1),
+            starButton.widthAnchor.constraint(equalTo: stackView.widthAnchor, multiplier: 0.1)
         ])
-        
     }
-    
     @objc private func didTapStarButton() {
         starButton.isSelected.toggle()
         guard let code = self.firstLabel.text else { return }

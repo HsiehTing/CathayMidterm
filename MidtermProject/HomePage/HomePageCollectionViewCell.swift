@@ -7,7 +7,6 @@
 import UIKit
 
 class HomePageCollectionViewCell: UICollectionViewCell, FetchAPIDelegate {
-    
     private let titleSets = ["櫃買指數", "寶島指數", "臺灣 50", "加權指數", "加權報酬指數"]
     private var index: Int?
     private var color = UIColor()
@@ -24,7 +23,6 @@ class HomePageCollectionViewCell: UICollectionViewCell, FetchAPIDelegate {
         "https://openapi.twse.com.tw/v1/indicesReport/MI_5MINS_HIST",
         "https://openapi.twse.com.tw/v1/indicesReport/MFI94U"
     ]
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         configView()
@@ -36,62 +34,45 @@ class HomePageCollectionViewCell: UICollectionViewCell, FetchAPIDelegate {
             self.reloadInputViews()
         }
     }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
     func passData(data: [(any APIDataProtocol)?]) {
         switch index {
         case 0:
-            
             DispatchQueue.main.async {
                 self.setUpColor(data: data)
             }
-            
         case 1:
             guard let data = data as? [FRMSAData] else { return }
-            
             DispatchQueue.main.async {
                 self.setUpColor(data: data)
             }
-            
         case 2:
             guard let data = data as? [TAI50I] else { return }
-            
             DispatchQueue.main.async {
                 self.setUpColor(data: data)
             }
-            
         case 3:
             guard let data = data as? [HIST] else { return }
-            
             DispatchQueue.main.async {
                 self.setUpColor(data: data)
             }
-            
         case 4:
             guard let data = data as? [MFI94U] else { return }
-            
             DispatchQueue.main.async {
                 self.setUpColor(data: data)
             }
-            
         default:
             guard let data = data as? [IndexData] else { return }
-            
             DispatchQueue.main.async {
                 self.setUpColor(data: data)
             }
-            
         }
-        
     }
-    
-    func getData(dataSet: [String: Any] , index: Int) {
+    func getData(dataSet: [String: Any], index: Int) {
         self.index = index
     }
-    
     func setUpColor(data: [(any APIDataProtocol)?]) {
         guard let dataOn1 = data[1] else { return }
         guard let dataOn0 = data[0] else { return }
@@ -117,11 +98,8 @@ class HomePageCollectionViewCell: UICollectionViewCell, FetchAPIDelegate {
                 self.indexValueLabel.textColor = .green
                 self.changeLabel.text = "-\(changeInt) (\(roundedChangeRate)) ↓"
                 self.layer.borderColor = UIColor.green.cgColor
-                
             }
-        
     }
-    
     func configView() {
         self.addSubview(indexTitleLabel)
         self.addSubview(stackView)
@@ -135,19 +113,14 @@ class HomePageCollectionViewCell: UICollectionViewCell, FetchAPIDelegate {
         self.layer.cornerRadius = 20
         self.layer.borderWidth = 1
     }
-    
     func configAutoLayout() {
-        
         indexTitleLabel.translatesAutoresizingMaskIntoConstraints = false
         stackView.translatesAutoresizingMaskIntoConstraints = false
-        
         NSLayoutConstraint.activate([
             indexTitleLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 10),
             indexTitleLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
             stackView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             stackView.topAnchor.constraint(equalTo: indexTitleLabel.bottomAnchor, constant: 25),
         ])
-        
     }
-    
 }

@@ -15,7 +15,6 @@ struct StockAPIDay: Codable {
     let name: String
     let closingPrice: String
     let change: String
-    
     enum CodingKeys: String, CodingKey {
         case code = "Code"
         case name = "Name"
@@ -32,7 +31,6 @@ struct StockAPIMonthYear: Codable {
     let highestPrice: String
     let lowestPrice: String
     let transaction: String
-    
     enum CodingKeys: String, CodingKey {
         case code = "Code"
         case name = "Name"

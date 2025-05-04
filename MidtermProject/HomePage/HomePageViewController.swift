@@ -8,32 +8,27 @@
 import UIKit
 
 class HomePageViewController: UIViewController {
-
-    
     private let homePageCollectionView = UICollectionView(
         frame: .zero, collectionViewLayout: configFlowLayout()
     )
     private let homePageCollectionViewIdentifier = "homePageCollectionView"
     private var apiData: [String: Any] = [:]
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setNavigationTitile()
         configView()
         configHomePageCollectionViewAutoLayout()
     }
-    
     private func configView() {
         view.addSubview(homePageCollectionView)
-        homePageCollectionView.register(HomePageCollectionViewCell.self, forCellWithReuseIdentifier: homePageCollectionViewIdentifier)
+        homePageCollectionView.register(HomePageCollectionViewCell.self,
+                                        forCellWithReuseIdentifier: homePageCollectionViewIdentifier)
         homePageCollectionView.delegate = self
         homePageCollectionView.dataSource = self
     }
-    
     private func setNavigationTitile() {
         navigationItem.title = "昨日收盤指數"
     }
-    
     private func configHomePageCollectionViewAutoLayout() {
         self.homePageCollectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -43,11 +38,8 @@ class HomePageViewController: UIViewController {
             homePageCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
-    
     static func configFlowLayout() -> UICollectionViewCompositionalLayout {
-        
         let layOut = UICollectionViewCompositionalLayout { _, _ in
-            
             let itemSize = NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(0.5),
                 heightDimension: .fractionalHeight(1.0)
@@ -64,37 +56,32 @@ class HomePageViewController: UIViewController {
         }
         return layOut
     }
-    
 }
 
 extension HomePageViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         5
     }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = self.homePageCollectionView.dequeueReusableCell(withReuseIdentifier: homePageCollectionViewIdentifier, for: indexPath) as? HomePageCollectionViewCell else { return UICollectionViewCell() }
-        
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = self.homePageCollectionView.dequeueReusableCell(
+            withReuseIdentifier: homePageCollectionViewIdentifier, for: indexPath)
+                as? HomePageCollectionViewCell else { return UICollectionViewCell() }
         cell.getData(dataSet: self.apiData, index: indexPath.row)
 
         return cell
     }
-    
     @objc private func didTapSignUpPage() {
         let signupVC = SignupViewController()
         self.navigationController?.pushViewController(signupVC, animated: true)
     }
-    
 }
 
 extension HomePageViewController: UICollectionViewDelegate {
-    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let titleSets = ["櫃買指數", "寶島指數", "臺灣 50", "加權指數", "加權報酬指數"]
         let stockVC = StockDayViewController()
         stockVC.navigationTitle = titleSets[indexPath.item]
         self.navigationController?.pushViewController(stockVC, animated: true)
     }
-    
 }
-

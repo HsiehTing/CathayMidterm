@@ -16,20 +16,16 @@ class SettingPageViewController: UIViewController {
     private let restrictScreenshotLabel = UILabel()
     private let restrictScreenshotSwitch = UISwitch()
     private let logOutButton = UIButton()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         configView()
         configAutoLayout()
     }
-    
     override func viewWillAppear(_ animated: Bool) {
         guard let data = UserDefaults.standard.object(forKey: "PersonalInfo") as? [String: String] else { return }
-        
         guard let name = data["姓名"] else { return }
         regardingLabel.text = "Hi, \(name)"
     }
-    
     private func configView() {
         view.addSubview(stackView)
         view.addSubview(regardingLabel)
@@ -46,15 +42,12 @@ class SettingPageViewController: UIViewController {
         stackView.layer.cornerRadius = 12
         stackView.addArrangedSubview(wrapWithBottomBorder(changeInfoButton))
         stackView.addArrangedSubview(wrapWithBottomBorder(changePasswordButton))
-               
         stackView.insertArrangedSubview(screenShotStackView, at: 2)
 
         screenShotStackView.axis = .horizontal
         screenShotStackView.distribution = .fillEqually
         screenShotStackView.alignment = .center
-        
         guard let data = UserDefaults.standard.object(forKey: "PersonalInfo") as? [String: String] else { return }
-        
         guard let name = data["姓名"] else { return }
         regardingLabel.text = "Hi, \(name)"
         regardingLabel.font = .systemFont(ofSize: 32)
@@ -78,7 +71,6 @@ class SettingPageViewController: UIViewController {
         changePasswordButton.addTarget(self, action: #selector(didTapChangePasswordButton), for: .touchUpInside)
         logOutButton.addTarget(self, action: #selector(didTapLogOutButton), for: .touchUpInside)
     }
-    
     private func configAutoLayout() {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         regardingLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -107,11 +99,10 @@ class SettingPageViewController: UIViewController {
             logOutButton.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
-    
-    private func wrapWithBottomBorder(_ view: UIView, borderColor: UIColor = .darkGray, borderHeight: CGFloat = 1) -> UIView {
+    private func wrapWithBottomBorder(_ view: UIView,
+                                      borderColor: UIColor = .darkGray, borderHeight: CGFloat = 1) -> UIView {
         let container = UIView()
         container.addSubview(view)
-        
         view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             view.leadingAnchor.constraint(equalTo: container.leadingAnchor),
@@ -119,11 +110,9 @@ class SettingPageViewController: UIViewController {
             view.topAnchor.constraint(equalTo: container.topAnchor),
             view.bottomAnchor.constraint(equalTo: container.bottomAnchor)
         ])
-        
         let border = UIView()
         border.backgroundColor = borderColor
         container.addSubview(border)
-        
         border.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             border.heightAnchor.constraint(equalToConstant: borderHeight),
@@ -131,22 +120,19 @@ class SettingPageViewController: UIViewController {
             border.trailingAnchor.constraint(equalTo: container.trailingAnchor),
             border.bottomAnchor.constraint(equalTo: container.bottomAnchor)
         ])
-        
         return container
     }
-    
     @objc func didTapChangeInfoButton() {
         let infoVC = ChangeInfoViewController()
         self.navigationController?.pushViewController(infoVC, animated: true)
     }
-    
     @objc func didTapChangePasswordButton() {
         let passwordVC = ChangePasswordViewController()
         self.navigationController?.pushViewController(passwordVC, animated: true)
     }
-    
     @objc func didTapLogOutButton() {
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene, let window = windowScene.windows.first {
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first {
             let loginController = LoginViewController()
             window.rootViewController = loginController
             window.makeKeyAndVisible()

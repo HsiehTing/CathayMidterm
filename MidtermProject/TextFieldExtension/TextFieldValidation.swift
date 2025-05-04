@@ -8,9 +8,7 @@
 import UIKit
 
 extension UITextField {
-    
     func isDigitSafe(with word: String) -> Bool {
-        
         guard let text = self.text, !text.isEmpty else {
             print("no digits yet")
             return false
@@ -25,5 +23,4 @@ extension UITextField {
         }
         return true
     }
-    
 }

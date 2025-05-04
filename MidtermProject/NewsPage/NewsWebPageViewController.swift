@@ -16,9 +16,7 @@ class NewsWebPageViewController: UIViewController, WKUIDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        loadWebView() 
-        
+        loadWebView()
         guard let string = urlString,
               let url = URL(string: string) else { return }
 

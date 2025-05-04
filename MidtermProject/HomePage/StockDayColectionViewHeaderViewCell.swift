@@ -8,9 +8,7 @@
 import UIKit
 
 class StockDayColectionViewHeaderViewCell: UICollectionReusableView {
-    
-    public var titleArray: [String] = ["代號","名稱","價格","價格變動","變動比例","自選"]
-    
+    public var titleArray: [String] = ["代號", "名稱", "價格", "價格變動", "變動比例", "自選"]
     private let stackView = UIStackView()
     private var firstLabel = UILabel()
     private let secondLabel = UILabel()
@@ -19,7 +17,6 @@ class StockDayColectionViewHeaderViewCell: UICollectionReusableView {
     private let fifthLabel = UILabel()
     private let starButtonLabel = UILabel()
     private let defaults = UserDefaults.standard
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         configView()
@@ -34,7 +31,6 @@ class StockDayColectionViewHeaderViewCell: UICollectionReusableView {
         self.titleArray = titleArray
         updateLabelContent()
     }
-    
     private func updateLabelContent() {
         self.firstLabel.text = titleArray[0]
         self.secondLabel.text = titleArray[1]
@@ -43,13 +39,10 @@ class StockDayColectionViewHeaderViewCell: UICollectionReusableView {
         self.fifthLabel.text = titleArray[4]
         self.starButtonLabel.text = titleArray[5]
     }
-    
     private func configView() {
         configStackView()
     }
-    
     private func configStackView() {
-        
         self.addSubview(stackView)
         stackView.insertArrangedSubview(firstLabel, at: 0)
         stackView.insertArrangedSubview(secondLabel, at: 1)
@@ -66,9 +59,7 @@ class StockDayColectionViewHeaderViewCell: UICollectionReusableView {
         stackView.axis = .horizontal
         stackView.alignment = .fill
         stackView.distribution = .fill
-        
     }
-    
     private func configViewAutoLayout() {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         firstLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -77,7 +68,6 @@ class StockDayColectionViewHeaderViewCell: UICollectionReusableView {
         fourthLabel.translatesAutoresizingMaskIntoConstraints = false
         fifthLabel.translatesAutoresizingMaskIntoConstraints = false
         starButtonLabel.translatesAutoresizingMaskIntoConstraints = false
-        
         NSLayoutConstraint.activate([
             stackView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             stackView.topAnchor.constraint(equalTo: self.topAnchor),
@@ -89,12 +79,7 @@ class StockDayColectionViewHeaderViewCell: UICollectionReusableView {
             thirdLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor, multiplier: 0.15),
             fourthLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor, multiplier: 0.15),
             fifthLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor, multiplier: 0.15),
-            starButtonLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor, multiplier: 0.1),
-
+            starButtonLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor, multiplier: 0.1)
         ])
     }
-    
-    
-
-    
 }

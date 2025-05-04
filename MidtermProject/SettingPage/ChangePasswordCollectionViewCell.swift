@@ -17,7 +17,6 @@ class ChangePasswordViewCell: UICollectionViewCell {
     private let requirementLabel = UILabel()
 
     var delegate: ChangePasswordDelegate?
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         configView()
@@ -27,31 +26,25 @@ class ChangePasswordViewCell: UICollectionViewCell {
         configAutoLayout()
         setupUnderline()
     }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
     override func layoutSubviews() {
         super.layoutSubviews()
         self.inputTextField.setUnderLine()
     }
-    
     func getData(index: Int) {
         self.index = index
         configLabel()
         if index == 1 {
             configRequirementLabel()
-           
         }
         inputTextField.addTarget(self, action: #selector(textfieldDidEndEditing_DigitSafe(_:)), for: .editingDidEnd)
     }
-    
     private func configView() {
         self.addSubview(stackView)
         configLabel()
     }
-    
     private func configStackView() {
         stackView.addArrangedSubview(questionLabel)
         stackView.addArrangedSubview(inputTextField)
@@ -60,22 +53,18 @@ class ChangePasswordViewCell: UICollectionViewCell {
         stackView.spacing = 20
         self.questionLabel.font = .systemFont(ofSize: 24)
     }
-    
     func configTextField() {
         inputTextField.keyboardType = .asciiCapable
         inputTextField.autocapitalizationType = .none
         inputTextField.spellCheckingType = .no
         inputTextField.autocorrectionType = .no
     }
-    
     private func configLabel() {
         guard let index = self.index else { return }
         self.questionLabel.text = questionSet[index]
         self.questionLabel.font = .systemFont(ofSize: 24)
     }
-    
     func configRequirementLabel() {
-    
         requirementLabel.backgroundColor = .gray
         requirementLabel.text = "限 8-16 位英數字符號"
         requirementLabel.font = .systemFont(ofSize: 12)
@@ -83,7 +72,6 @@ class ChangePasswordViewCell: UICollectionViewCell {
         requirementLabel.backgroundColor = .white
         requirementLabel.textColor = .gray
         requirementLabel.translatesAutoresizingMaskIntoConstraints = false
-        
         self.addSubview(requirementLabel)
         NSLayoutConstraint.activate([
             requirementLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 100),
@@ -93,7 +81,6 @@ class ChangePasswordViewCell: UICollectionViewCell {
             requirementLabel.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
-    
     private func configAutoLayout() {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         questionLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -105,20 +92,15 @@ class ChangePasswordViewCell: UICollectionViewCell {
             questionLabel.widthAnchor.constraint(equalToConstant: 220),
             inputTextField.widthAnchor.constraint(equalTo: self.widthAnchor)
         ])
-        
     }
-    
     private func setupUnderline() {
            underlineView.backgroundColor = .black
            underlineView.isUserInteractionEnabled = false
            self.addSubview(underlineView)
     }
-    
     @objc func textfieldDidEndEditing_DigitSafe(_ textField: UITextField) {
-        
         guard let text = inputTextField.text else { return }
         guard let index = self.index else { return }
-        
         guard inputTextField.isDigitSafe(with: text) else {
             self.requirementLabel.textColor = .red
             return
@@ -126,5 +108,4 @@ class ChangePasswordViewCell: UICollectionViewCell {
         self.delegate?.passInfo(info: text, question: questionSet[index])
         self.requirementLabel.textColor = .gray
     }
-    
 }

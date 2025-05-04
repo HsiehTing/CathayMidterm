@@ -8,11 +8,9 @@
 import UIKit
 
 class ChangePasswordViewController: UIViewController, ChangeInfoDelegate, ChangePasswordDelegate {
-    
     private let changePasswordCollectionView = UICollectionView(
         frame: .zero, collectionViewLayout: SignupViewController.configFlowLayout()
     )
-    
     private let changePasswordCollectionViewIdentifier = "changePasswordCollectionViewIdentifier"
     private let confirmButton = UIButton()
     public let questionSets = ["原密碼", "新密碼", "確認密碼"]
@@ -27,21 +25,16 @@ class ChangePasswordViewController: UIViewController, ChangeInfoDelegate, Change
         configAutoLayout()
         setUpTapGesture()
     }
-    
     private func setNavigationTitle() {
         navigationItem.title = "變更密碼"
     }
-    
     private func getPersonalInfo() {
-        
         guard let data = UserDefaults.standard.object(forKey: "PersonalInfo") as? [String: String] else { return }
         personalInfo = data
     }
-    
     func passInfo(info: String, question: String) {
         self.passBackArray[question] = info
-        
-        if passBackArray.count == questionSets.count ,
+        if passBackArray.count == questionSets.count,
            passBackArray["原密碼"] == personalInfo["密碼"],
             passBackArray["新密碼"] == passBackArray["再次輸入新密碼"], passBackArray["原密碼"] != passBackArray["密碼"] {
             confirmButton.isUserInteractionEnabled = true
@@ -51,13 +44,11 @@ class ChangePasswordViewController: UIViewController, ChangeInfoDelegate, Change
             confirmButton.isUserInteractionEnabled = false
         }
     }
-    
     func setUpTapGesture() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
         self.view.addGestureRecognizer(tapGesture)
     }
-    
     private func configButton() {
         view.addSubview(confirmButton)
         confirmButton.setTitle("確認變更", for: .normal)
@@ -68,20 +59,18 @@ class ChangePasswordViewController: UIViewController, ChangeInfoDelegate, Change
         confirmButton.layer.cornerRadius = 12
         confirmButton.addTarget(self, action: #selector(didTapSignup), for: .touchUpInside)
     }
-    
     private func configCollectionView() {
         view.addSubview(changePasswordCollectionView)
-        changePasswordCollectionView.register(ChangePasswordViewCell.self, forCellWithReuseIdentifier: changePasswordCollectionViewIdentifier)
+        changePasswordCollectionView.register(ChangePasswordViewCell.self,
+                                              forCellWithReuseIdentifier: changePasswordCollectionViewIdentifier)
         changePasswordCollectionView.delegate = self
         changePasswordCollectionView.dataSource = self
     }
-    
     private func configAutoLayout() {
         changePasswordCollectionView.translatesAutoresizingMaskIntoConstraints = false
         confirmButton.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            
             changePasswordCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             changePasswordCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             changePasswordCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
@@ -90,14 +79,10 @@ class ChangePasswordViewController: UIViewController, ChangeInfoDelegate, Change
             confirmButton.widthAnchor.constraint(equalToConstant: 360),
             confirmButton.heightAnchor.constraint(equalToConstant: 60),
             confirmButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30)
-            
         ])
     }
-    
     static func configFlowLayout() -> UICollectionViewCompositionalLayout {
-        
         let layOut = UICollectionViewCompositionalLayout { _, _ in
-            
             let itemSize = NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1.0),
                 heightDimension: .fractionalHeight(0.2)
@@ -114,36 +99,30 @@ class ChangePasswordViewController: UIViewController, ChangeInfoDelegate, Change
         }
         return layOut
     }
-    
     @objc private func dismissKeyboard() {
         view.endEditing(true)
     }
-    
     @objc private func didTapSignup() {
         personalInfo["密碼"] = passBackArray["新密碼"]
         UserDefaults.standard.set(personalInfo, forKey: "PersonalInfo")
         navigationController?.popViewController(animated: true)
     }
-    
 }
 
 extension ChangePasswordViewController: UICollectionViewDelegate {
-    
 }
 
 extension ChangePasswordViewController: UICollectionViewDataSource {
-    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         questionSets.count
-        
     }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = changePasswordCollectionView.dequeueReusableCell(withReuseIdentifier: changePasswordCollectionViewIdentifier, for: indexPath) as? ChangePasswordViewCell else { return UICollectionViewCell() }
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = changePasswordCollectionView.dequeueReusableCell(
+            withReuseIdentifier: changePasswordCollectionViewIdentifier,
+            for: indexPath) as? ChangePasswordViewCell else { return UICollectionViewCell() }
         cell.getData(index: indexPath.item)
         cell.delegate = self
         return cell
     }
-    
 }
-
