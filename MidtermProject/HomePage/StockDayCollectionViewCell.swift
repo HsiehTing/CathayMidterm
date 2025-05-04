@@ -37,6 +37,7 @@ class StockDayCollectionViewCell: UICollectionViewCell {
         self.index = index
         setUpLabelText()
         setUpStarButton()
+        configColor()
     }
     
     private func configView() {
@@ -114,6 +115,21 @@ class StockDayCollectionViewCell: UICollectionViewCell {
     
     private func configColor() {
         
+        switch cellData {
+        case .day(let data):
+            guard let index = self.index else { return }
+            guard let change = Float(data[index].change) else { return }
+                    if change > 0 {
+                        self.firstLabel.textColor = .red
+                        self.secondLabel.textColor = .red
+                        self.thirdLabel.textColor = .red
+                        self.fourthLabel.textColor = .red
+                        self.fifthLabel.textColor = .red
+                    }
+        default:
+            break
+        }
+        
     }
     
     private func configStackView() {
@@ -130,6 +146,11 @@ class StockDayCollectionViewCell: UICollectionViewCell {
         thirdLabel.font = .systemFont(ofSize: 12, weight: .medium)
         fourthLabel.font = .systemFont(ofSize: 12, weight: .medium)
         fifthLabel.font = .systemFont(ofSize: 12, weight: .medium)
+        firstLabel.textColor = .green
+        secondLabel.textColor = .green
+        thirdLabel.textColor = .green
+        fourthLabel.textColor = .green
+        fifthLabel.textColor = .green
         
         starButton.setImage(starImage, for: .normal)
         starButton.setImage(starFillImage, for: .selected)

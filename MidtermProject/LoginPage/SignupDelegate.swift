@@ -8,5 +8,5 @@
 import UIKit
 
 protocol SignupDelegate {
-    func passInfo(info: String, index: Int)
+    func passInfo(info: String, question: String)
 }

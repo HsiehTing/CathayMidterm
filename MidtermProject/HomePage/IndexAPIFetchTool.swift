@@ -7,7 +7,7 @@
 import UIKit
 
 protocol FetchAPIDelegate {
-    func passData(data: [APIDataProtocol])
+    func passData(data: [(any APIDataProtocol)?])
 }
 
 class APIFetchTool {
@@ -24,43 +24,41 @@ class APIFetchTool {
                 return
             }
             
+            
             do {
                 if let data = data {
                     switch index {
                     case 0:
-                         let decodedData = try JSONDecoder().decode([IndexData].self, from: data)
+                        let decodedData = try JSONDecoder().decode([IndexData].self, from: data)
                         guard let lastData = decodedData.last else { return }
-                        let last2Data = decodedData[decodedData.count - 2]
-                        self.delegate?.passData(data: [lastData, last2Data])
+                        let last2Data: IndexData? = decodedData.count < 2 ? decodedData.last : decodedData[decodedData.count - 2]
+                        self.delegate?.passData(data: [lastData, last2Data] as [(any APIDataProtocol)?])
                     case 1:
                         let decodedData = try JSONDecoder().decode([FRMSAData].self, from: data)
                         guard let lastData = decodedData.last else { return }
-                        let last2Data = decodedData[decodedData.count - 2]
-                        self.delegate?.passData(data: [lastData, last2Data])
-                            
+                        let last2Data: FRMSAData? = decodedData.count < 2 ? decodedData.last : decodedData[decodedData.count - 2]
+                        self.delegate?.passData(data: [lastData, last2Data] as [(any APIDataProtocol)?])
                     case 2:
                         let decodedData = try JSONDecoder().decode([TAI50I].self, from: data)
                         guard let lastData = decodedData.last else { return }
-                        let last2Data = decodedData[decodedData.count - 2]
-                        self.delegate?.passData(data: [lastData, last2Data])
+                        let last2Data: TAI50I? = decodedData.count < 2 ? decodedData.last : decodedData[decodedData.count - 2]
+                        self.delegate?.passData(data: [lastData, last2Data] as [(any APIDataProtocol)?])
                     case 3:
                         let decodedData = try JSONDecoder().decode([HIST].self, from: data)
                         guard let lastData = decodedData.last else { return }
-                        let last2Data = decodedData[decodedData.count - 2]
-                        self.delegate?.passData(data: [lastData, last2Data])
+                        let last2Data: HIST? = decodedData.count < 2 ? decodedData.last : decodedData[decodedData.count - 2]
+                        self.delegate?.passData(data: [lastData, last2Data] as [(any APIDataProtocol)?])
                     case 4:
                         let decodedData = try JSONDecoder().decode([MFI94U].self, from: data)
                         guard let lastData = decodedData.last else { return }
-                        let last2Data = decodedData[decodedData.count - 2]
-                        self.delegate?.passData(data: [lastData, last2Data])
+                        let last2Data: MFI94U? = decodedData.count < 2 ? decodedData.last : decodedData[decodedData.count - 2]
+                        self.delegate?.passData(data: [lastData, last2Data] as [(any APIDataProtocol)?])
+                        
                     default:
-                        let decodedData = try JSONDecoder().decode([IndexData].self, from: data)
-                        guard let lastData = decodedData.last else { return }
-                        let last2Data = decodedData[decodedData.count - 2]
-                        self.delegate?.passData(data: [lastData, last2Data])
+                        break
                     }
                 }
-            } catch {
+            }  catch {
                 print("decoded failed")
             }
         }

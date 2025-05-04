@@ -41,7 +41,7 @@ class HomePageCollectionViewCell: UICollectionViewCell, FetchAPIDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func passData(data: [APIDataProtocol]) {
+    func passData(data: [(any APIDataProtocol)?]) {
         switch index {
         case 0:
             
@@ -92,12 +92,15 @@ class HomePageCollectionViewCell: UICollectionViewCell, FetchAPIDelegate {
         self.index = index
     }
     
-    func setUpColor(data: [APIDataProtocol]) {
-        guard let secondIndex = Double(data[1].indexValue) else { return }
-        guard let lastIndex = Double(data[0].indexValue) else { return }
+    func setUpColor(data: [(any APIDataProtocol)?]) {
+        guard let dataOn1 = data[1] else { return }
+        guard let dataOn0 = data[0] else { return }
+
+        guard let secondIndex = Double(dataOn1.indexValue) else { return }
+        guard let lastIndex = Double(dataOn0.indexValue) else { return }
         guard let index = index else { return }
         let indexTitle = titleSets[index]
-        self.indexValueLabel.text = data[0].indexValue
+        self.indexValueLabel.text = data[0]?.indexValue
         self.indexTitleLabel.text = indexTitle
         let changeInt = (lastIndex - secondIndex).rounded()
         let changeRate = ((lastIndex - secondIndex) / secondIndex) * 100

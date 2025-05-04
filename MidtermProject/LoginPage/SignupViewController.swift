@@ -31,12 +31,15 @@ class SignupViewController: UIViewController, SignupDelegate {
         self.setUpTapGesture()
     }
     
-    func passInfo(info: String, index: Int) {
-        self.passBackArray[String(index)] = info
+    func passInfo(info: String, question: String) {
+        self.passBackArray[question] = info
         
-        if passBackArray.count == questionSets.count , passBackArray["1"] == passBackArray["2"], passBackArray["0"] != passBackArray["1"] {
+        if passBackArray.count == questionSets.count , passBackArray["密碼"] == passBackArray["再次確認密碼"], passBackArray["帳號"] != passBackArray["密碼"] {
             signupButton.isUserInteractionEnabled = true
             signupButton.backgroundColor = .black
+        } else {
+            signupButton.backgroundColor = .lightGray
+            signupButton.isUserInteractionEnabled = false
         }
     }
     
@@ -123,7 +126,7 @@ class SignupViewController: UIViewController, SignupDelegate {
     }
     
     @objc private func didTapSignup() {
-        UserDefaults.standard.set(passBackArray, forKey: "passBackArray")
+        UserDefaults.standard.set(passBackArray, forKey: "PersonalInfo")
         navigationController?.popViewController(animated: true)
     }
     

@@ -1,31 +1,31 @@
 //
-//  SignupCollectionviewCell.swift
+//  ChangePasswordViewCell.swift
 //  MidtermProject
 //
-//  Created by TWINB00599242 on 2025/4/28.
+//  Created by TWINB00599242 on 2025/5/3.
 //
-
 import UIKit
 
-class SignupCollectionviewCell: UICollectionViewCell {
-
-    var questionSets: [String] = []
-    var index: Int = 0
-    var delegate: SignupDelegate?
+class ChangePasswordViewCell: UICollectionViewCell {
     private let questionLabel = UILabel()
     private let inputTextField = UITextField()
     private let stackView = UIStackView()
     private let underlineView = UIView()
+    private let questionSet: [String] = ["原密碼", "新密碼", "再次輸入新密碼"]
+    private let confirmButton = UIButton()
+    public var index: Int?
     private let requirementLabel = UILabel()
+
+    var delegate: ChangePasswordDelegate?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.inputTextField.setUnderLine()
         configView()
+        configStackView()
+        configLabel()
+        configTextField()
         configAutoLayout()
         setupUnderline()
-        configTextField()
-        
     }
     
     required init?(coder: NSCoder) {
@@ -37,17 +37,28 @@ class SignupCollectionviewCell: UICollectionViewCell {
         self.inputTextField.setUnderLine()
     }
     
-    func getData(quesionSets: [String], index: Int) {
-        self.questionSets = quesionSets
+    func getData(index: Int) {
         self.index = index
         configLabel()
-        if index == 0 || index == 1 {
+        if index == 1 {
             configRequirementLabel()
-            inputTextField.addTarget(self, action: #selector(textfieldDidEndEditing_DigitSafe(_:)), for: .editingDidEnd)
-        } else {
-            inputTextField.addTarget(self, action: #selector(textfieldDidEndEditing(_:)), for: .editingDidEnd)
+           
         }
-        
+        inputTextField.addTarget(self, action: #selector(textfieldDidEndEditing_DigitSafe(_:)), for: .editingDidEnd)
+    }
+    
+    private func configView() {
+        self.addSubview(stackView)
+        configLabel()
+    }
+    
+    private func configStackView() {
+        stackView.addArrangedSubview(questionLabel)
+        stackView.addArrangedSubview(inputTextField)
+        stackView.axis = .vertical
+        stackView.alignment = .leading
+        stackView.spacing = 20
+        self.questionLabel.font = .systemFont(ofSize: 24)
     }
     
     func configTextField() {
@@ -57,23 +68,10 @@ class SignupCollectionviewCell: UICollectionViewCell {
         inputTextField.autocorrectionType = .no
     }
     
-    @objc func textfieldDidEndEditing_DigitSafe(_ textField: UITextField) {
-        
-        guard let text = inputTextField.text else { return }
-        
-        guard inputTextField.isDigitSafe(with: text) else {
-            self.requirementLabel.textColor = .red
-            return
-        }
-        self.delegate?.passInfo(info: text, question: questionSets[index])
-        self.requirementLabel.textColor = .gray
-    }
-    
-    @objc func textfieldDidEndEditing(_ textField: UITextField) {
-        
-        guard let text = inputTextField.text else { return }
-        
-        self.delegate?.passInfo(info: text, question: questionSets[index])
+    private func configLabel() {
+        guard let index = self.index else { return }
+        self.questionLabel.text = questionSet[index]
+        self.questionLabel.font = .systemFont(ofSize: 24)
     }
     
     func configRequirementLabel() {
@@ -96,29 +94,11 @@ class SignupCollectionviewCell: UICollectionViewCell {
         ])
     }
     
-    private func configView() {
-        self.addSubview(stackView)
-        configStackView()
-    }
-    
-    private func configStackView() {
-        stackView.addArrangedSubview(questionLabel)
-        stackView.addArrangedSubview(inputTextField)
-        stackView.axis = .vertical
-        stackView.alignment = .leading
-        stackView.spacing = 20
-        self.questionLabel.font = .systemFont(ofSize: 24)
-    }
-    
-    private func configLabel() {
-        self.questionLabel.text = questionSets[index]
-        self.questionLabel.font = .systemFont(ofSize: 24)
-    }
-    
     private func configAutoLayout() {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         questionLabel.translatesAutoresizingMaskIntoConstraints = false
         inputTextField.translatesAutoresizingMaskIntoConstraints = false
+        confirmButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             stackView.centerYAnchor.constraint(equalTo: self.centerYAnchor),
             stackView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
@@ -133,4 +113,18 @@ class SignupCollectionviewCell: UICollectionViewCell {
            underlineView.isUserInteractionEnabled = false
            self.addSubview(underlineView)
     }
+    
+    @objc func textfieldDidEndEditing_DigitSafe(_ textField: UITextField) {
+        
+        guard let text = inputTextField.text else { return }
+        guard let index = self.index else { return }
+        
+        guard inputTextField.isDigitSafe(with: text) else {
+            self.requirementLabel.textColor = .red
+            return
+        }
+        self.delegate?.passInfo(info: text, question: questionSet[index])
+        self.requirementLabel.textColor = .gray
+    }
+    
 }
