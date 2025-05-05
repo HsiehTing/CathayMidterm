@@ -43,7 +43,10 @@ class NewsPageCollectionviewCell: UICollectionViewCell {
         shareButton.setImage(UIImage(systemName: "square.and.arrow.up.circle"), for: .normal)
         shareButton.tintColor = .black
         dateLabel.textColor = .black
+        dateLabel.font = .systemFont(ofSize: 12, weight: .regular)
         titleLabel.textColor = .black
+        titleLabel.font = .systemFont(ofSize: 24, weight: .bold)
+        titleLabel.textAlignment = .left
         titleLabel.numberOfLines = 0
         dateLabel.numberOfLines = 0
         self.layer.borderColor = UIColor.black.cgColor

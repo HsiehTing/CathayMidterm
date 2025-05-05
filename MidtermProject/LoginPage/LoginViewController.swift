@@ -176,14 +176,14 @@ class LoginViewController: UIViewController {
                 as? [String: String] else { return }
         let accountName = accountSets["0"]
         let password = accountSets["1"]
-        if textFieldAccountName == accountName, textFieldPassword == password {
+        //if textFieldAccountName == accountName, textFieldPassword == password {
             if let windowScene = UIApplication.shared.connectedScenes.first
                 as? UIWindowScene, let window = windowScene.windows.first {
                 let tabBarController = TabBarViewController()
                 window.rootViewController = tabBarController
                 window.makeKeyAndVisible()
             }
-        }
+        //}
     }
     @objc func textFieldDidEndEditing(_ textField: UITextField) {
         guard let accountName = accountInputTextField.text else { return }

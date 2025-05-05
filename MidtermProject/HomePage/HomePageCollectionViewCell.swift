@@ -120,7 +120,7 @@ class HomePageCollectionViewCell: UICollectionViewCell, FetchAPIDelegate {
             indexTitleLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 10),
             indexTitleLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
             stackView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            stackView.topAnchor.constraint(equalTo: indexTitleLabel.bottomAnchor, constant: 25),
+            stackView.topAnchor.constraint(equalTo: indexTitleLabel.bottomAnchor, constant: 25)
         ])
     }
 }

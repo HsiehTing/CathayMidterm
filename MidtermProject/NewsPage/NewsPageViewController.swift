@@ -43,6 +43,7 @@ class NewsPageViewController: UIViewController, FetchNewsAPIDelegate {
         configCollectionView()
         configSortStackView()
         configSortButtonView()
+        configSortLabel()
     }
     private func configCollectionView() {
         view.addSubview(newsPageCollectionView)
@@ -63,6 +64,11 @@ class NewsPageViewController: UIViewController, FetchNewsAPIDelegate {
         sortStack.insertArrangedSubview(sortButton, at: 1)
         sortStack.axis = .horizontal
         sortStack.distribution = .fillProportionally
+    }
+    
+    private func configSortLabel() {
+        sortLabel.textColor = .lightGray
+        sortLabel.text = "由新至舊"
     }
     private func setNavigationTitile() {
         navigationItem.title = "新聞"
@@ -91,7 +97,7 @@ class NewsPageViewController: UIViewController, FetchNewsAPIDelegate {
                 heightDimension: .fractionalHeight(0.3)
             )
             let item = NSCollectionLayoutItem(layoutSize: itemSize)
-            item.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 30, trailing: 10)
+            item.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 20, trailing: 10)
             let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
             let section = NSCollectionLayoutSection(group: group)
             return section
@@ -102,6 +108,11 @@ class NewsPageViewController: UIViewController, FetchNewsAPIDelegate {
         self.sortButton.isSelected.toggle()
         self.newsArray = newsArray.reversed()
         self.newsPageCollectionView.reloadData()
+        if sortButton.isSelected == true {
+            self.sortLabel.text = "由舊至新"
+        } else {
+            self.sortLabel.text = "由新至舊"
+        }
     }
 }
 

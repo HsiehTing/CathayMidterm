@@ -24,6 +24,7 @@ class ChangeInfoViewController: UIViewController, ChangeInfoDelegate {
         configButton()
         configAutoLayout()
         setUpTapGesture()
+        configToolBarButton()
     }
     private func getPersonalInfo() {
         guard let data = UserDefaults.standard.object(forKey: "PersonalInfo") as? [String: String] else { return }
@@ -38,6 +39,15 @@ class ChangeInfoViewController: UIViewController, ChangeInfoDelegate {
             confirmButton.isUserInteractionEnabled = false
             confirmButton.backgroundColor = .lightGray
         }
+    }
+    private func configToolBarButton() {
+        let backButton = UIButton()
+        backButton.setImage(UIImage(systemName: "chevron.left"), for: .normal)
+        backButton.tintColor = .black
+        backButton.addTarget(self, action: #selector(didTapBack), for: .touchUpInside)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
+        self.navigationController?.isToolbarHidden = false
+        self.navigationItem.hidesBackButton = true
     }
     func setUpTapGesture() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
@@ -96,6 +106,9 @@ class ChangeInfoViewController: UIViewController, ChangeInfoDelegate {
             return section
         }
         return layOut
+    }
+    @objc private func didTapBack() {
+        self.navigationController?.popViewController(animated: true)
     }
     @objc private func dismissKeyboard() {
         view.endEditing(true)

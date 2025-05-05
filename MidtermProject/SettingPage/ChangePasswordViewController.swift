@@ -24,6 +24,7 @@ class ChangePasswordViewController: UIViewController, ChangeInfoDelegate, Change
         configButton()
         configAutoLayout()
         setUpTapGesture()
+        configToolBarButton()
     }
     private func setNavigationTitle() {
         navigationItem.title = "變更密碼"
@@ -48,6 +49,15 @@ class ChangePasswordViewController: UIViewController, ChangeInfoDelegate, Change
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
         self.view.addGestureRecognizer(tapGesture)
+    }
+    private func configToolBarButton() {
+        let backButton = UIButton()
+        backButton.setImage(UIImage(systemName: "chevron.left"), for: .normal)
+        backButton.tintColor = .black
+        backButton.addTarget(self, action: #selector(didTapBack), for: .touchUpInside)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
+        self.navigationController?.isToolbarHidden = false
+        self.navigationItem.hidesBackButton = true
     }
     private func configButton() {
         view.addSubview(confirmButton)
@@ -98,6 +108,9 @@ class ChangePasswordViewController: UIViewController, ChangeInfoDelegate, Change
             return section
         }
         return layOut
+    }
+    @objc private func didTapBack() {
+        self.navigationController?.popViewController(animated: true)
     }
     @objc private func dismissKeyboard() {
         view.endEditing(true)
