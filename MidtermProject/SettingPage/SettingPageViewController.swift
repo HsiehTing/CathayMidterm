@@ -20,6 +20,7 @@ class SettingPageViewController: UIViewController {
         super.viewDidLoad()
         configView()
         configAutoLayout()
+        configNotification()
     }
     override func viewWillAppear(_ animated: Bool) {
         guard let data = UserDefaults.standard.object(forKey: "PersonalInfo") as? [String: String] else { return }
@@ -32,7 +33,7 @@ class SettingPageViewController: UIViewController {
         view.addSubview(logOutButton)
         stackView.insertArrangedSubview(changeInfoButton, at: 0)
         stackView.insertArrangedSubview(changePasswordButton, at: 1)
-
+        
         screenShotStackView.insertArrangedSubview(restrictScreenshotLabel, at: 0)
         screenShotStackView.insertArrangedSubview(restrictScreenshotSwitch, at: 1)
         stackView.axis = .vertical
@@ -43,7 +44,7 @@ class SettingPageViewController: UIViewController {
         stackView.addArrangedSubview(wrapWithBottomBorder(changeInfoButton))
         stackView.addArrangedSubview(wrapWithBottomBorder(changePasswordButton))
         stackView.insertArrangedSubview(screenShotStackView, at: 2)
-
+        
         screenShotStackView.axis = .horizontal
         screenShotStackView.distribution = .fillEqually
         screenShotStackView.alignment = .center
@@ -70,6 +71,10 @@ class SettingPageViewController: UIViewController {
         changeInfoButton.addTarget(self, action: #selector(didTapChangeInfoButton), for: .touchUpInside)
         changePasswordButton.addTarget(self, action: #selector(didTapChangePasswordButton), for: .touchUpInside)
         logOutButton.addTarget(self, action: #selector(didTapLogOutButton), for: .touchUpInside)
+    }
+    private func configNotification() {
+        NotificationCenter.default.addObserver(self, selector: #selector(didTakeScreenshot),
+                                               name: UIApplication.userDidTakeScreenshotNotification, object: nil)
     }
     private func configAutoLayout() {
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -130,6 +135,12 @@ class SettingPageViewController: UIViewController {
         let passwordVC = ChangePasswordViewController()
         self.navigationController?.pushViewController(passwordVC, animated: true)
     }
+    @objc func didTakeScreenshot() {
+        guard restrictScreenshotSwitch.isOn else { return }
+        let alert = UIAlertController(title: "", message: "以設定禁止截圖", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "ok", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
     @objc func didTapLogOutButton() {
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let window = windowScene.windows.first {
@@ -138,5 +149,8 @@ class SettingPageViewController: UIViewController {
             window.makeKeyAndVisible()
         }
     }
-
+    deinit {
+        NotificationCenter.default.removeObserver(self,
+                                                  name: UIApplication.userDidTakeScreenshotNotification, object: nil)
+    }
 }

@@ -8,16 +8,17 @@
 import UIKit
 
 class LoginViewController: UIViewController {
-    let accountLabel = UILabel()
-    let passwordLabel = UILabel()
-    let rememberMeLabel = UILabel()
-    let loginButton = UIButton(type: .roundedRect)
-    let rememberCheckBox = UIButton(type: .custom,
+    private let accountLabel = UILabel()
+    private let passwordLabel = UILabel()
+    private let rememberMeLabel = UILabel()
+    private let loginButton = UIButton(type: .roundedRect)
+    private let rememberCheckBox = UIButton(type: .custom,
                                     primaryAction: UIAction(handler: { _ in }))
-    let signUpButton = UIButton(type: .custom)
-    let accountInputTextField = UITextField()
-    let passwordInputTextField = UITextField()
-    let stackView = UIStackView()
+    private let signUpButton = UIButton(type: .custom)
+    private let accountInputTextField = UITextField()
+    private let passwordInputTextField = UITextField()
+    private let stackView = UIStackView()
+    private var isRememberMe: Bool?
     override func viewDidLoad() {
         super.viewDidLoad()
         configView()
@@ -27,6 +28,7 @@ class LoginViewController: UIViewController {
         super.viewDidLayoutSubviews()
         configAccountInputUnderLine()
         configPasswordInputUnderLine()
+        
     }
     private func configView() {
         view.addSubview(accountLabel)
@@ -46,13 +48,14 @@ class LoginViewController: UIViewController {
         setUpTapGesture()
         configTextField()
         configTextFieldTarget()
+        setUpRememberMe()
     }
     private func setUpTapGesture() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
         self.view.addGestureRecognizer(tapGesture)
     }
-    func configTextField() {
+    private func configTextField() {
         accountInputTextField.keyboardType = .asciiCapable
         accountInputTextField.autocapitalizationType = .none
         accountInputTextField.spellCheckingType = .no
@@ -81,6 +84,23 @@ class LoginViewController: UIViewController {
     }
     private func configRememberMeLabel() {
         rememberMeLabel.font = .systemFont(ofSize: 24)
+    }
+    private func setUpRememberMe() {
+        isRememberMe = UserDefaults.standard.object(forKey: "isRemember") as? Bool
+        guard let isRememberMe = self.isRememberMe else { return }
+        guard let accountSets = UserDefaults.standard.object(forKey: "PersonalInfo")
+                as? [String: String] else { return }
+        let accountName = accountSets["帳號"]
+        let password = accountSets["密碼"]
+        if isRememberMe {
+            self.rememberCheckBox.isSelected = true
+            self.accountInputTextField.text = accountName
+            self.passwordInputTextField.text = password
+        } else {
+            self.rememberCheckBox.isSelected = false
+            self.accountInputTextField.text = ""
+            self.passwordInputTextField.text = ""
+        }
     }
     private func configBottomLine() -> CALayer {
         let bottomLine = CALayer()
@@ -164,6 +184,11 @@ class LoginViewController: UIViewController {
         rememberCheckBox.isSelected.toggle()
         rememberCheckBox.configuration?.baseBackgroundColor = .white
         rememberCheckBox.configuration?.baseForegroundColor = .black
+        if rememberCheckBox.isSelected {
+            UserDefaults.standard.set(true, forKey: "isRemember")
+        } else {
+            UserDefaults.standard.set(false, forKey: "isRemember")
+        }
     }
     @objc private func didTapSignUpPage() {
         let signupVC = SignupViewController()
@@ -172,18 +197,18 @@ class LoginViewController: UIViewController {
     @objc private func didTapLoginButton() {
         let textFieldAccountName = accountInputTextField.text
         let textFieldPassword = passwordInputTextField.text
-        guard let accountSets = UserDefaults.standard.object(forKey: "passBackArray")
+        guard let accountSets = UserDefaults.standard.object(forKey: "PersonalInfo")
                 as? [String: String] else { return }
-        let accountName = accountSets["0"]
-        let password = accountSets["1"]
-        //if textFieldAccountName == accountName, textFieldPassword == password {
+        let accountName = accountSets["帳號"]
+        let password = accountSets["密碼"]
+        if textFieldAccountName == accountName, textFieldPassword == password {
             if let windowScene = UIApplication.shared.connectedScenes.first
                 as? UIWindowScene, let window = windowScene.windows.first {
                 let tabBarController = TabBarViewController()
                 window.rootViewController = tabBarController
                 window.makeKeyAndVisible()
             }
-        //}
+        }
     }
     @objc func textFieldDidEndEditing(_ textField: UITextField) {
         guard let accountName = accountInputTextField.text else { return }
